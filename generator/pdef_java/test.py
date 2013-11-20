@@ -1,8 +1,8 @@
 # encoding: utf-8
 import unittest
-from pdefc.lang import *
+from pdef_java import JavaGenerator, JavaFilters, JAVA_NATIVE_REFS
 from pdefc.generators import Namespace
-from pdefc.generators.java import *
+from pdefc.lang import *
 
 
 class TestJavaGenerator(unittest.TestCase):

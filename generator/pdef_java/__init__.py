@@ -17,8 +17,9 @@ INTERFACE_TEMPLATE = 'interface.jinja2'
 
 class JavaGenerator(Generator):
     def __init__(self, out, namespace=None, **kwargs):
-        self.out = out
-        self.filters = JavaFilters(Namespace(namespace))
+        super(JavaGenerator, self).__init__(out, namespace=namespace)
+
+        self.filters = JavaFilters(self.namespace)
         self.templates = Templates(__file__, filters=self.filters)
 
     def generate(self, package):
@@ -64,8 +65,9 @@ class JavaGenerator(Generator):
 
 class JavaFilters(object):
     '''Java filters for Jinja templates.'''
-    def __init__(self, namespace):
+    def __init__(self, namespace, prefix=None):
         self.namespace = namespace
+        self.prefix = prefix
 
     def jpackage(self, module):
         return self.namespace(module.name)
@@ -154,10 +156,10 @@ class JavaFilters(object):
 
     def _jdefinition(self, type0):
         package = self.jpackage(type0.module)
-        name = '%s.%s' % (package, type0.name)
-        descriptor = '%s.DESCRIPTOR' % name
-        default = ('new %s()' % name) if type0.is_message else 'null'
-        return JavaRef(name, descriptor, default=default)
+        absolute_name = '%s.%s' % (package, type0.name)
+        descriptor = '%s.DESCRIPTOR' % absolute_name
+        default = ('new %s()' % absolute_name) if type0.is_message else 'null'
+        return JavaRef(absolute_name, descriptor, default=default)
 
 
 class JavaRef(object):
