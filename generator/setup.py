@@ -24,12 +24,12 @@ setup(
     },
 
     install_requires=[
-        'pdefc>=1.0'
+        'pdef-compiler'
     ],
     entry_points={
         'pdefc.generators': [
             'java = pdef_java:JavaGenerator',
-            ]
+        ]
     },
 
     classifiers=[

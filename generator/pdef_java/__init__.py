@@ -16,6 +16,7 @@ INTERFACE_TEMPLATE = 'interface.jinja2'
 
 
 class JavaGenerator(Generator):
+    '''Java code generator, supports namespaces.'''
     def __init__(self, out, namespace=None, **kwargs):
         super(JavaGenerator, self).__init__(out, namespace=namespace)
 
