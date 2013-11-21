@@ -1,4 +1,3 @@
-.*
 *.pyc
 *.iml
 
@@ -7,3 +6,4 @@ dist/
 *.egg-info
 
 target/
+
