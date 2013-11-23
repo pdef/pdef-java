@@ -95,7 +95,7 @@ public class RpcProtocol {
 		while (!parts.isEmpty()) {
 			String part = parts.removeFirst();
 
-			// Find a method by name.
+			// Find a method by a name.
 			MethodDescriptor<?, ?> method = descriptor.getMethod(part);
 			if (method == null) {
 				throw RpcException.methodNotFound("Method is not found: " + part);
@@ -123,16 +123,17 @@ public class RpcProtocol {
 		}
 
 		if (!parts.isEmpty()) {
+			// No more interface descriptors in a chain, but the parts are still present.
 			throw RpcException.methodNotFound("Failed to parse an invocation chain");
 		}
 
 		if (invocation == null) {
-			throw RpcException.methodNotFound("No methods");
+			throw RpcException.methodNotFound("Methods required");
 		}
 
 		if (!invocation.getMethod().isTerminal()) {
 			throw RpcException.methodNotFound("The last method must be a terminal one. "
-					+ "It must return a value type or be void.");
+					+ "It must return a data type or be void.");
 		}
 
 		return invocation;
@@ -184,6 +185,7 @@ public class RpcProtocol {
 		}
 
 		if (descriptor.getType() == TypeEnum.STRING) {
+			// Strings are unquoted, return the quotes to parse them as valid json strings.
 			value = "\"" + value + "\"";
 		}
 

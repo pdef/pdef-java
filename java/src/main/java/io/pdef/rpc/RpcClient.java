@@ -35,9 +35,8 @@ public class RpcClient<T> implements Invoker {
 	public Object invoke(final Invocation invocation) throws Exception {
 		if (invocation == null) throw new NullPointerException("invocation");
 
-		MethodDescriptor<?, ?> method = invocation.getMethod();
-		DataTypeDescriptor<?> resultDescriptor = (DataTypeDescriptor<?>) method.getResult();
-		MessageDescriptor<? extends Message> excDescriptor = method.getExc();
+		DataTypeDescriptor<?> resultDescriptor = invocation.getResult();
+		MessageDescriptor<? extends Message> excDescriptor = invocation.getExc();
 
 		RpcRequest request = protocol.getRequest(invocation);
 		return session.send(request, resultDescriptor, excDescriptor);
