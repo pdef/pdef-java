@@ -1,8 +1,6 @@
 package io.pdef;
 
-import io.pdef.descriptors.MessageDescriptor;
 import io.pdef.descriptors.MethodDescriptor;
-import io.pdef.descriptors.DataTypeDescriptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,26 +36,6 @@ public class Invocation {
 
 	public MethodDescriptor<?, ?> getMethod() {
 		return method;
-	}
-
-	/** Returns the method result. */
-	public DataTypeDescriptor<?> getResult() {
-		if (!method.isTerminal()) {
-			throw new IllegalStateException("Cannot get a result when a method is not terminal");
-		}
-
-		return (DataTypeDescriptor<?>) method.getResult();
-	}
-
-	/** Returns the method exception or the parent exception. */
-	@Nullable
-	public MessageDescriptor<? extends Message> getExc() {
-		MessageDescriptor<? extends Message> exc = method.getExc();
-		if (exc != null) {
-			return exc;
-		}
-
-		return parent == null ? null : parent.getExc();
 	}
 
 	/** Creates a child invocation. */

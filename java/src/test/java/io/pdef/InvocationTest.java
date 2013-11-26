@@ -42,20 +42,6 @@ public class InvocationTest {
 	}
 
 	@Test
-	public void testGetResult() throws Exception {
-		Invocation invocation = Invocation.root(method(),
-				new Object[]{1, 2});
-		assertEquals(method().getResult(), invocation.getResult());
-	}
-
-	@Test
-	public void testGetExc() throws Exception {
-		Invocation invocation = Invocation.root(method(),
-				new Object[]{1, 2});
-		assertEquals(method().getExc(), invocation.getExc());
-	}
-
-	@Test
 	public void testToChain() throws Exception {
 		List<Invocation> chain = Invocation
 				.root(interfaceMethod(), new Object[]{1, 2})

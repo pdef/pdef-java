@@ -36,9 +36,6 @@ package {{ interface.module|jpackage }};
                 {% else %}
                     .setResult({{ method.result|jdescriptor }})
                 {% endif %}
-                {% if interface.exc %}
-                    .setExc({{ interface.exc|jdescriptor }})
-                {% endif %}
                 {% for arg in method.args %}
                     .addArg("{{ arg.name }}", {{ arg.type|jdescriptor }}, {{ arg.is_query|jbool }}, {{ arg.is_post|jbool }})
                 {% endfor %}

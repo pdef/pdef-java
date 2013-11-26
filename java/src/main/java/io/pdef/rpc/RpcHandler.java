@@ -7,6 +7,7 @@ import io.pdef.Providers;
 import io.pdef.descriptors.DataTypeDescriptor;
 import io.pdef.descriptors.InterfaceDescriptor;
 import io.pdef.descriptors.MessageDescriptor;
+import io.pdef.descriptors.MethodDescriptor;
 
 public class RpcHandler<T> {
 	private final InterfaceDescriptor<T> descriptor;
@@ -31,8 +32,9 @@ public class RpcHandler<T> {
 		if (request == null) throw new NullPointerException("request");
 
 		Invocation invocation = protocol.getInvocation(request, descriptor);
-		DataTypeDescriptor<Object> resultd = (DataTypeDescriptor<Object>) invocation.getResult();
-		MessageDescriptor<Message> excd = (MessageDescriptor<Message>) invocation.getExc();
+		MethodDescriptor<?, ?> method = invocation.getMethod();
+		DataTypeDescriptor<Object> resultd = (DataTypeDescriptor<Object>) method.getResult();
+		MessageDescriptor<Message> excd = (MessageDescriptor<Message>) descriptor.getExc();
 
 		T service = provider.get();
 		try {

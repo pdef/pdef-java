@@ -16,13 +16,6 @@ public class MethodDescriptorTest {
 	}
 
 	@Test
-	public void testGetExc() throws Exception {
-		MethodDescriptor<TestInterface, ?> method = method();
-		assertNotNull(method);
-		assertTrue(method.getExc() == TestException.DESCRIPTOR);
-	}
-
-	@Test
 	public void testIndexPostTerminal() throws Exception {
 		MethodDescriptor<TestInterface, ?> index = method();
 		MethodDescriptor<TestInterface, ?> query = TestInterface.DESCRIPTOR.getMethod(

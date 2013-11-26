@@ -1,6 +1,5 @@
 package io.pdef.descriptors;
 
-import io.pdef.Message;
 import io.pdef.Provider;
 import io.pdef.Providers;
 import io.pdef.TypeEnum;
@@ -15,7 +14,6 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 
 	private final Provider<Descriptor<R>> resultProvider;
 	private final List<ArgumentDescriptor<?>> args;
-	private final MessageDescriptor<? extends Message> exc;
 	private final boolean post;
 
 	private Descriptor<R> result;
@@ -30,7 +28,6 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 
 		resultProvider = builder.result;
 		args = ImmutableCollections.list(builder.args);
-		exc = builder.exc;
 		post = builder.post;
 	}
 
@@ -63,15 +60,6 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 		return args;
 	}
 
-	/**
-	 * Returns a method exception descriptor or {@literal null}.
-	 * <p/>
-	 * In default pdef implementation all interface methods share the same exception.
-	 */
-	public MessageDescriptor<? extends Message> getExc() {
-		return exc;
-	}
-
 	/** Returns whether this method is a post method (annotated with @post annotation). */
 	public boolean isPost() {
 		return post;
@@ -92,7 +80,6 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 		private String name;
 		private Provider<Descriptor<R>> result;
 		private List<ArgumentDescriptor<?>> args;
-		private MessageDescriptor<? extends Message> exc;
 		private MethodInvoker<T, R> invoker;
 		private boolean post;
 
@@ -121,11 +108,6 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 
 		public Builder<T, R> setResult(final Provider<Descriptor<R>> result) {
 			this.result = result;
-			return this;
-		}
-
-		public Builder<T, R> setExc(final MessageDescriptor<? extends Message> exc) {
-			this.exc = exc;
 			return this;
 		}
 
