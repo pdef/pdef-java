@@ -75,7 +75,8 @@ public class AbstractMessageTest {
 	@Test
 	public void testMerge() throws Exception {
 		TestComplexMessage message = createComplexMessage();
-		TestComplexMessage another = new TestComplexMessage().merge(message);
+		TestComplexMessage another = new TestComplexMessage();
+		another.merge(message);
 
 		assertEquals(message, another);
 	}

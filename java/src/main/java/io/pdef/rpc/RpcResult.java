@@ -1,61 +1,86 @@
 package io.pdef.rpc;
 
+import io.pdef.DynamicMessage;
 import io.pdef.Message;
-import io.pdef.descriptors.MessageDescriptor;
+import io.pdef.Provider;
 import io.pdef.descriptors.DataTypeDescriptor;
+import io.pdef.descriptors.Descriptors;
+import io.pdef.descriptors.MessageDescriptor;
 
-public class RpcResult<T> {
-	private final boolean ok;
-	private final T data;
-	private final DataTypeDescriptor<T> descriptor;
+import javax.annotation.Nullable;
 
-	private RpcResult(final boolean ok, final T data, final DataTypeDescriptor<T> descriptor) {
-		this.ok = ok;
-		this.data = data;
-		this.descriptor = descriptor;
+/** Generic RpcResult. */
+public class RpcResult<T, E> extends DynamicMessage {
+	private final DataTypeDescriptor<T> datad;
+	private final DataTypeDescriptor<E> errord;
+	private T data;
+	private E error;
+	private boolean success;
+
+	public RpcResult(final DataTypeDescriptor<T> datad) {
+		this(datad, null);
 	}
 
-	public static <T> RpcResult<T> ok(final T data, final DataTypeDescriptor<T> descriptor) {
-		return new RpcResult<T>(true, data, descriptor);
+	@SuppressWarnings("unchecked")
+	public RpcResult(final DataTypeDescriptor<T> datad,
+			@Nullable final DataTypeDescriptor<E> errord) {
+		if (datad == null) {
+			throw new NullPointerException("datad");
+		}
+		this.datad = datad;
+		this.errord = errord != null ? errord : (DataTypeDescriptor<E>) Descriptors.void0;
 	}
 
-	public static <E extends Message> RpcResult<E> exc(final E exception,
-			final MessageDescriptor<E> descriptor) {
-		return new RpcResult<E>(false, exception, descriptor);
+	public DataTypeDescriptor<T> getDataDescriptor() {
+		return datad;
 	}
 
-	public boolean isOk() {
-		return ok;
+	public DataTypeDescriptor<E> getErrorDescriptor() {
+		return errord;
 	}
 
 	public T getData() {
 		return data;
 	}
 
-	public DataTypeDescriptor<T> getDescriptor() {
-		return descriptor;
+	public RpcResult<T, E> setData(final T data) {
+		this.data = data;
+		return this;
+	}
+
+	public E getError() {
+		return error;
+	}
+
+	public RpcResult<T, E> setError(final E error) {
+		this.error = error;
+		return this;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public RpcResult<T, E> setSuccess(final boolean success) {
+		this.success = success;
+		return this;
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+	public MessageDescriptor<? extends Message> descriptor() {
+		@SuppressWarnings("unchecked")
+		Class<RpcResult<T, E>> messageClass = (Class<RpcResult<T, E>>) getClass();
 
-		final RpcResult result = (RpcResult) o;
-
-		if (ok != result.ok) return false;
-		if (data != null ? !data.equals(result.data) : result.data != null) return false;
-		if (descriptor != null ? !descriptor.equals(result.descriptor) : result.descriptor != null)
-			return false;
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		int result = (ok ? 1 : 0);
-		result = 31 * result + (data != null ? data.hashCode() : 0);
-		result = 31 * result + (descriptor != null ? descriptor.hashCode() : 0);
-		return result;
+		return MessageDescriptor.<RpcResult<T, E>>builder()
+				.setJavaClass(messageClass)
+				.setProvider(new Provider<RpcResult<T, E>>() {
+					@Override
+					public RpcResult<T, E> get() {
+						return new RpcResult<T, E>(datad, errord);
+					}
+				})
+				.addField("data", datad, messageClass)
+				.addField("error", errord, messageClass)
+				.build();
 	}
 }

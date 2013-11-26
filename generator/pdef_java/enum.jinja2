@@ -11,19 +11,5 @@ public enum {{ enum.name }} {
 
     public static final io.pdef.descriptors.EnumDescriptor<{{ enum.name }}> DESCRIPTOR =
             io.pdef.descriptors.EnumDescriptor.of({{ enum.name }}.class);
-
-    /** Returns an enum value from a string or {@literal null}. */
-    public static {{ enum.name }} fromString(final String s) {
-        return io.pdef.formats.ObjectFormat.getInstance().fromObject(s, DESCRIPTOR);
-    }
-
-    /** Returns an enum value from a json string or {@literal null}. */
-    public static {{ enum.name }} fromJson(final String s) {
-        return io.pdef.formats.JsonFormat.getInstance().fromJson(s, DESCRIPTOR);
-    }
-
-    public String toJson() {
-        return io.pdef.formats.JsonFormat.getInstance().toJson(this, DESCRIPTOR, false);
-    }
 }
 

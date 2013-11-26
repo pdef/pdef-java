@@ -18,12 +18,12 @@ public class JsonFormat {
 	private static final JsonFormat INSTANCE = new JsonFormat();
 
 	private final JsonFactory factory;
-	private final ObjectFormat objectFormat;
+	private final DataFormat dataFormat;
 	private final ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {
 		@Override
 		protected DateFormat initialValue() {
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			format.setTimeZone(tz);
 			return format;
 		}
@@ -35,7 +35,7 @@ public class JsonFormat {
 
 	protected JsonFormat(final JsonFactory factory) {
 		this.factory = factory;
-		objectFormat = ObjectFormat.getInstance();
+		dataFormat = DataFormat.getInstance();
 	}
 
 	public static JsonFormat getInstance() {
@@ -45,7 +45,7 @@ public class JsonFormat {
 	// Serialization.
 
 	/** Serializes an object into a string. */
-	public <T> String toJson(final T object, final DataTypeDescriptor<T> descriptor,
+	public <T> String write(final T object, final DataTypeDescriptor<T> descriptor,
 			final boolean indent) throws FormatException {
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
@@ -68,13 +68,13 @@ public class JsonFormat {
 	}
 
 	/** Writes an object to an output stream as a JSON string, does not close the stream. */
-	public <T> void toJson(final OutputStream out, final T object,
+	public <T> void write(final OutputStream stream, final T object,
 			final DataTypeDescriptor<T> descriptor, final boolean indent) {
-		if (out == null) throw new NullPointerException("out");
+		if (stream == null) throw new NullPointerException("out");
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
 		try {
-			JsonGenerator generator = factory.createGenerator(out);
+			JsonGenerator generator = factory.createGenerator(stream);
 			if (indent) {
 				generator.useDefaultPrettyPrinter();
 			}
@@ -89,7 +89,7 @@ public class JsonFormat {
 	}
 
 	/** Writes an object to a writer as a JSON string, does not close the writer. */
-	public <T> void toJson(final PrintWriter writer, final T object,
+	public <T> void write(final PrintWriter writer, final T object,
 			final DataTypeDescriptor<T> descriptor, final boolean indent) {
 		if (writer == null) throw new NullPointerException("writer");
 		if (descriptor == null) throw new NullPointerException("descriptor");
@@ -269,15 +269,15 @@ public class JsonFormat {
 	// Parsing.
 
 	/** Parses an object from a string. */
-	public <T> T fromJson(final String input, final DataTypeDescriptor<T> descriptor)
+	public <T> T read(final String s, final DataTypeDescriptor<T> descriptor)
 			throws FormatException {
 		if (descriptor == null) throw new NullPointerException("descriptor");
-		if (input == null) {
+		if (s == null) {
 			return null;
 		}
 
 		try {
-			JsonParser parser = factory.createParser(input);
+			JsonParser parser = factory.createParser(s);
 			return read(parser, descriptor);
 		} catch (FormatException e) {
 			throw e;
@@ -287,12 +287,12 @@ public class JsonFormat {
 	}
 
 	/** Parses an object from an input stream, does not close the input stream. */
-	public <T> T fromJson(final InputStream input, final DataTypeDescriptor<T> descriptor) {
-		if (input == null) throw new NullPointerException("input");
+	public <T> T read(final InputStream stream, final DataTypeDescriptor<T> descriptor) {
+		if (stream == null) throw new NullPointerException("input");
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
 		try {
-			JsonParser parser = factory.createParser(input);
+			JsonParser parser = factory.createParser(stream);
 			return read(parser, descriptor);
 		} catch (FormatException e) {
 			throw e;
@@ -302,7 +302,7 @@ public class JsonFormat {
 	}
 
 	/** Parses an object from a reader, does not close the reader. */
-	public <T> T fromJson(final Reader reader, final DataTypeDescriptor<T> descriptor) {
+	public <T> T read(final Reader reader, final DataTypeDescriptor<T> descriptor) {
 		if (reader == null) throw new NullPointerException("reader");
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
@@ -327,7 +327,7 @@ public class JsonFormat {
 			parser.close();
 		}
 
-		return objectFormat.fromObject(nativeObject, descriptor);
+		return dataFormat.read(nativeObject, descriptor);
 	}
 
 	private Object read(final JsonParser parser) throws IOException {
@@ -354,7 +354,7 @@ public class JsonFormat {
 	private List<?> readArray(final JsonParser parser) throws IOException {
 		JsonToken current = parser.getCurrentToken();
 		if (current != JsonToken.START_ARRAY) {
-			throw new FormatException("Bad JSON string, failed to fromJson an array");
+			throw new FormatException("Bad JSON string, failed to read an array");
 		}
 
 		List<Object> list = new ArrayList<Object>();
@@ -376,7 +376,7 @@ public class JsonFormat {
 	private Map<String, Object> readMap(final JsonParser parser) throws IOException {
 		JsonToken current = parser.getCurrentToken();
 		if (current != JsonToken.START_OBJECT) {
-			throw new FormatException("Bad JSON string, failed to fromJson an object");
+			throw new FormatException("Bad JSON string, failed to read an object");
 		}
 
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -387,7 +387,7 @@ public class JsonFormat {
 			} else if (next == JsonToken.END_OBJECT) {
 				break;
 			} else if (next != JsonToken.FIELD_NAME) {
-				throw new FormatException("Failed to fromJson a field name from " + next);
+				throw new FormatException("Failed to read a field name from " + next);
 			}
 
 			String field = parser.getCurrentName();

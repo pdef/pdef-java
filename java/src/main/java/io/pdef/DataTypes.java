@@ -1,5 +1,7 @@
 package io.pdef;
 
+import io.pdef.descriptors.DataTypeDescriptor;
+
 import java.util.*;
 
 /**
@@ -14,7 +16,7 @@ public class DataTypes {
 	public static <T> T copy(final T object) {
 		if (object == null) return null;
 		TypeEnum type = TypeEnum.dataTypeOf(object.getClass());
-		return copy(type, object);
+		return copy(object, type);
 	}
 
 	/**
@@ -41,7 +43,7 @@ public class DataTypes {
 				if (elementType == null) {
 					elementType = TypeEnum.dataTypeOf(element.getClass());
 				}
-				elementCopy = copy(elementType, element);
+				elementCopy = copy(element, elementType);
 			}
 
 			copy.add(elementCopy);
@@ -66,7 +68,7 @@ public class DataTypes {
 				if (elementType == null) {
 					elementType = TypeEnum.dataTypeOf(element.getClass());
 				}
-				elementCopy = copy(elementType, element);
+				elementCopy = copy(element, elementType);
 			}
 
 			copy.add(elementCopy);
@@ -96,7 +98,7 @@ public class DataTypes {
 				if (keyType == null) {
 					keyType = TypeEnum.dataTypeOf(key.getClass());
 				}
-				keyCopy = copy(keyType, key);
+				keyCopy = copy(key, keyType);
 			}
 
 			V valueCopy = null;
@@ -104,7 +106,7 @@ public class DataTypes {
 				if (valueType == null) {
 					valueType = TypeEnum.dataTypeOf(value.getClass());
 				}
-				valueCopy = copy(valueType, value);
+				valueCopy = copy(value, valueType);
 			}
 
 			copy.put(keyCopy, valueCopy);
@@ -113,8 +115,19 @@ public class DataTypes {
 		return copy;
 	}
 
+	/**
+	 * Returns a deep copy of an object.
+	 */
+	public static <T> T copy(final T object, final DataTypeDescriptor<T> descriptor) {
+		if (descriptor == null) {
+			throw new NullPointerException("descriptor");
+		}
+
+		return copy(object, descriptor.getType());
+	}
+
 	@SuppressWarnings("unchecked")
-	private static <T> T copy(final TypeEnum type, final T object) {
+	private static <T> T copy(final T object, final TypeEnum type) {
 		if (type == null) {
 			throw new NullPointerException("type");
 		}

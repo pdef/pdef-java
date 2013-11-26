@@ -1,7 +1,7 @@
 package io.pdef.rpc;
 
 import io.pdef.descriptors.DataTypeDescriptor;
-import io.pdef.formats.JsonFormat;
+import io.pdef.descriptors.Descriptors;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -26,25 +26,18 @@ public class HttpUrlConnectionRpcSession implements RpcSession {
 	public static final Charset UTF8 = Charset.forName(UTF8_NAME);
 
 	private final String url;
-	private final JsonFormat format;
 
 	public HttpUrlConnectionRpcSession(final String url) {
-		this(url, JsonFormat.getInstance());
-	}
-
-	public HttpUrlConnectionRpcSession(final String url, final JsonFormat format) {
 		if (url == null) throw new NullPointerException("url");
-		if (format == null) throw new NullPointerException("format");
 
 		this.url = url;
-		this.format = format;
 	}
 
 	@Override
-	public <T, E> T send(final RpcRequest request, final DataTypeDescriptor<T> resultDescriptor,
-			final DataTypeDescriptor<E> excDescriptor) throws Exception {
+	public <T, E> T send(final RpcRequest request, final DataTypeDescriptor<T> datad,
+			final DataTypeDescriptor<E> errord) throws Exception {
 		if (request == null) throw new NullPointerException("request");
-		if (resultDescriptor == null) throw new NullPointerException("resultDescriptor");
+		if (datad == null) throw new NullPointerException("resultDescriptor");
 
 		URL url = buildUrl(this.url, request);
 		HttpURLConnection connection = openConnection(url, request);
@@ -53,7 +46,7 @@ public class HttpUrlConnectionRpcSession implements RpcSession {
 				sendPostData(connection, request);
 			}
 
-			return handleResponse(connection, resultDescriptor, excDescriptor);
+			return handleResponse(connection, datad, errord);
 		} finally {
 			connection.disconnect();
 		}
@@ -125,18 +118,18 @@ public class HttpUrlConnectionRpcSession implements RpcSession {
 
 	/** Reads a response. */
 	protected <T, E> T handleResponse(final HttpURLConnection connection,
-			final DataTypeDescriptor<T> resultDescriptor, final DataTypeDescriptor<E> excDescriptor)
+			final DataTypeDescriptor<T> datad, final DataTypeDescriptor<E> errord)
 			throws IOException {
 		connection.connect();
 
 		int status = connection.getResponseCode();
 		if (status == HttpURLConnection.HTTP_OK) {
 			// It's a successful response, try to read the result.
-			return readResult(connection, resultDescriptor);
+			return readResult(connection, datad);
 
 		} else if (status == APPLICATION_EXC_STATUS) {
 			// It's an expected application exception.
-			throw (RuntimeException) readApplicationException(connection, excDescriptor);
+			throw (RuntimeException) readApplicationException(connection, errord);
 
 		} else {
 			// Something bad happened, try to read the error message.
@@ -145,26 +138,31 @@ public class HttpUrlConnectionRpcSession implements RpcSession {
 	}
 
 	protected <T> T readResult(final HttpURLConnection connection,
-			final DataTypeDescriptor<T> resultDescriptor) throws IOException {
-		InputStream input = new BufferedInputStream(connection.getInputStream());
-		return format.fromJson(input, resultDescriptor);
+			final DataTypeDescriptor<T> resultd) throws IOException {
+		InputStream stream = new BufferedInputStream(connection.getInputStream());
+
+		RpcResult<T, Void> result = new RpcResult<T, Void>(resultd, Descriptors.void0);
+		result.mergeJson(stream);
+		return result.getData();
 	}
 
 	protected <E> E readApplicationException(final HttpURLConnection connection,
-			final DataTypeDescriptor<E> excDescriptor) throws IOException {
+			final DataTypeDescriptor<E> errord) throws IOException {
 		int status = connection.getResponseCode();
-		InputStream input = connection.getErrorStream();
+		InputStream stream = connection.getErrorStream();
 
 		try {
-			if (input == null) {
+			if (stream == null) {
 				throw new RpcException(status, "The server returned no data");
-			} else if (excDescriptor == null) {
+			} else if (errord == null) {
 				throw new RpcException(status, "Unsupported application exception");
 			}
 
-			return format.fromJson(input, excDescriptor);
+			RpcResult<Void, E> result = new RpcResult<Void, E>(Descriptors.void0, errord);
+			result.mergeJson(stream);
+			return result.getError();
 		} finally {
-			closeLogExc(input);
+			closeLogExc(stream);
 		}
 	}
 

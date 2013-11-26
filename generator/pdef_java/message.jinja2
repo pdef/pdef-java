@@ -30,11 +30,11 @@ public class {{ message.name }} extends {{ message|jmessage_base }} {
     }
 
     public static {{ message.name }} fromMap(final java.util.Map<String, Object> map) {
-        return io.pdef.formats.ObjectFormat.getInstance().fromObject(map, DESCRIPTOR);
+        return io.pdef.formats.DataFormat.getInstance().read(map, DESCRIPTOR);
     }
 
     public static {{ message.name }} fromJson(final String s) {
-        return io.pdef.formats.JsonFormat.getInstance().fromJson(s, DESCRIPTOR);
+        return io.pdef.formats.JsonFormat.getInstance().read(s, DESCRIPTOR);
     }
 
 {% for field in message.declared_fields %}
@@ -83,9 +83,9 @@ public class {{ message.name }} extends {{ message|jmessage_base }} {
     }
 
     @Override
-	public {{ message.name }} merge(final io.pdef.Message message) {
+	public void merge(final io.pdef.Message message) {
 		super.merge(message);
-		if (!(message instanceof {{ message.name }})) return this;
+		if (!(message instanceof {{ message.name }})) return;
 
 		{{ message.name }} another = ({{ message.name }}) message;
     {% for field in message.declared_fields %}
@@ -95,8 +95,6 @@ public class {{ message.name }} extends {{ message|jmessage_base }} {
         if (another.{{ field.name }} != null) this.{{ field.name }} = another.{{ field.name }};
         {% endif %}
     {% endfor %}
-
-        return this;
 	}
 
     @Override

@@ -23,13 +23,13 @@ public class JsonFormatTest {
 
 	private <T> void test(final DataTypeDescriptor<T> descriptor, final T parsed,
 			final String serialized) {
-		assertEquals(serialized, format.toJson(parsed, descriptor, false));
-		assertEquals(parsed, format.fromJson(serialized, descriptor));
+		assertEquals(serialized, format.write(parsed, descriptor, false));
+		assertEquals(parsed, format.read(serialized, descriptor));
 
 		// Nulls.
-		assertEquals("null", format.toJson(null, descriptor, false));
-		assertNull(format.fromJson((String) null, descriptor));
-		assertNull(format.fromJson("null", descriptor));
+		assertEquals("null", format.write(null, descriptor, false));
+		assertNull(format.read((String) null, descriptor));
+		assertNull(format.read("null", descriptor));
 	}
 
 	@Test
@@ -70,13 +70,13 @@ public class JsonFormatTest {
 
 	@Test
 	public void testDatetime() throws Exception {
-		test(Descriptors.datetime, new Date(0), "\"1970-01-01T00:00Z\"");
+		test(Descriptors.datetime, new Date(0), "\"1970-01-01T00:00:00Z\"");
 	}
 
 	@Test
 	public void testEnum() throws Exception {
 		test(TestEnum.DESCRIPTOR, TestEnum.THREE, "\"three\"");
-		assertEquals(TestEnum.TWO, format.fromJson("\"tWo\"", TestEnum.DESCRIPTOR));
+		assertEquals(TestEnum.TWO, format.read("\"tWo\"", TestEnum.DESCRIPTOR));
 	}
 
 	@Test

@@ -75,7 +75,7 @@ public class RpcProtocol {
 	// VisibleForTesting
 	/** Serializes an argument to JSON, strips the quotes. */
 	<V> String toJson(final DataTypeDescriptor<V> descriptor, final V arg) {
-		String s = format.toJson(arg, descriptor, false);
+		String s = format.write(arg, descriptor, false);
 		if (descriptor.getType() != TypeEnum.STRING) {
 			return s;
 		}
@@ -189,7 +189,7 @@ public class RpcProtocol {
 			value = "\"" + value + "\"";
 		}
 
-		return format.fromJson(value, descriptor);
+		return format.read(value, descriptor);
 	}
 
 	/** Url-encodes a string. */

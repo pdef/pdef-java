@@ -28,7 +28,7 @@ public class RpcHandler<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public RpcResult<?> handle(final RpcRequest request) throws Exception {
+	public RpcResult<?, ?> handle(final RpcRequest request) throws Exception {
 		if (request == null) throw new NullPointerException("request");
 
 		Invocation invocation = protocol.getInvocation(request, descriptor);
@@ -39,12 +39,16 @@ public class RpcHandler<T> {
 		T service = provider.get();
 		try {
 			Object result = invocation.invoke(service);
-			return RpcResult.ok(result, resultd);
+			return new RpcResult<Object, Message>(resultd, excd)
+					.setData(result)
+					.setSuccess(true);
 
 		} catch (Exception e) {
 			if (excd != null && excd.getJavaClass().isAssignableFrom(e.getClass())) {
 				// It's an application exception.
-				return RpcResult.exc((Message) e, excd);
+				return new RpcResult<Object, Message>(resultd, excd)
+						.setError((Message) e)
+						.setSuccess(false);
 			}
 			
 			throw e;

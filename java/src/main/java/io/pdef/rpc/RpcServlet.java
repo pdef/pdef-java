@@ -1,7 +1,5 @@
 package io.pdef.rpc;
 
-import io.pdef.formats.JsonFormat;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +14,11 @@ public final class RpcServlet<T> extends HttpServlet {
 	public static final String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 	public static final String TEXT_CONTENT_TYPE = "text/plain; charset=utf-8";
 	public static final int APPLICATION_EXC_STATUS = 422;
-
 	private final transient RpcHandler<T> handler;
-	private final transient JsonFormat format;
 
 	public RpcServlet(final RpcHandler<T> handler) {
 		if (handler == null) throw new NullPointerException("handler");
 		this.handler = handler;
-		format = JsonFormat.getInstance();
 	}
 
 	@Override
@@ -34,7 +29,7 @@ public final class RpcServlet<T> extends HttpServlet {
 
 		RpcRequest request = getRpcRequest(req);
 		try {
-			RpcResult<?> result = handler.handle(request);
+			RpcResult<?, ?> result = handler.handle(request);
 			writeResult(result, resp);
 		} catch (RpcException e) {
 			writeRpcException(e, resp);
@@ -63,9 +58,9 @@ public final class RpcServlet<T> extends HttpServlet {
 	}
 
 	// VisibleForTesting
-	<T> void writeResult(final RpcResult<T> result, final HttpServletResponse resp)
+	void writeResult(final RpcResult<?, ?> result, final HttpServletResponse resp)
 			throws IOException {
-		if (result.isOk()) {
+		if (result.isSuccess()) {
 			resp.setStatus(HttpServletResponse.SC_OK);
 			resp.setContentType(JSON_CONTENT_TYPE);
 		} else {
@@ -74,7 +69,7 @@ public final class RpcServlet<T> extends HttpServlet {
 		}
 
 		PrintWriter writer = resp.getWriter();
-		format.toJson(writer, result.getData(), result.getDescriptor(), true);
+		result.toJson(writer, true);
 		writer.flush();
 	}
 

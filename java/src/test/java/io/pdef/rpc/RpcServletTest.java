@@ -45,7 +45,9 @@ public class RpcServletTest {
 
 	@Test
 	public void testWriteResult_ok() throws Exception {
-		RpcResult<String> result = RpcResult.ok("Привет", Descriptors.string);
+		RpcResult<String, Void> result = new RpcResult<String, Void>(Descriptors.string)
+				.setSuccess(true)
+				.setData("Привет");
 		HttpServletResponse response = mockResponse();
 		servlet.writeResult(result, response);
 
@@ -56,7 +58,10 @@ public class RpcServletTest {
 	@Test
 	public void testWriteResult_applicationException() throws Exception {
 		TestException e = new TestException().setText("Привет");
-		RpcResult<TestException> result = RpcResult.exc(e, TestException.DESCRIPTOR);
+		RpcResult<Void, TestException> result =
+				new RpcResult<Void, TestException>(Descriptors.void0, TestException.DESCRIPTOR)
+						.setSuccess(false)
+						.setError(e);
 		HttpServletResponse response = mockResponse();
 		servlet.writeResult(result, response);
 

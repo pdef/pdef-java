@@ -2,10 +2,10 @@ package io.pdef;
 
 import io.pdef.descriptors.FieldDescriptor;
 import io.pdef.descriptors.MessageDescriptor;
+import io.pdef.formats.DataFormat;
 import io.pdef.formats.JsonFormat;
-import io.pdef.formats.ObjectFormat;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -18,7 +18,7 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	@Override
 	public Map<String, Object> toMap() {
-		return ObjectFormat.getInstance().toObject(this, uncheckedDescriptor());
+		return DataFormat.getInstance().writeMessage(this, uncheckedDescriptor());
 	}
 
 	@Override
@@ -28,12 +28,51 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	@Override
 	public String toJson(final boolean indent) {
-		return JsonFormat.getInstance().toJson(this, uncheckedDescriptor(), indent);
+		return JsonFormat.getInstance().write(this, uncheckedDescriptor(), indent);
 	}
 
 	@Override
-	public AbstractException merge(final Message message) {
-		return this;
+	public void toJson(final PrintWriter writer, final boolean indent) {
+		JsonFormat.getInstance().write(writer, this, uncheckedDescriptor(), indent);
+	}
+
+	@Override
+	public void toJson(final OutputStream stream, final boolean indent) {
+		JsonFormat.getInstance().write(stream, this, uncheckedDescriptor(), indent);
+	}
+
+	@Override
+	public Message copy() {
+		Message another = uncheckedDescriptor().newInstance();
+		another.merge(this);
+		return another;
+	}
+
+	@Override
+	public void merge(final Message message) {}
+
+	@Override
+	public void merge(final Map<String, Object> map) {
+		Message message = DataFormat.getInstance().read(map, uncheckedDescriptor());
+		merge(message);
+	}
+
+	@Override
+	public void mergeJson(final String s) {
+		Message message = JsonFormat.getInstance().read(s, uncheckedDescriptor());
+		merge(message);
+	}
+
+	@Override
+	public void mergeJson(final Reader reader) {
+		Message message = JsonFormat.getInstance().read(reader, uncheckedDescriptor());
+		merge(message);
+	}
+
+	@Override
+	public void mergeJson(final InputStream stream) {
+		Message message = JsonFormat.getInstance().read(stream, uncheckedDescriptor());
+		merge(message);
 	}
 
 	@Override
@@ -90,7 +129,7 @@ public abstract class AbstractException extends RuntimeException implements Mess
 	}
 
 	@SuppressWarnings("unchecked")
-	private MessageDescriptor<Message> uncheckedDescriptor() {
+	MessageDescriptor<Message> uncheckedDescriptor() {
 		return (MessageDescriptor<Message>) descriptor();
 	}
 }

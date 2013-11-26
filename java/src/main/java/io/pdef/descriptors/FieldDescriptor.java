@@ -101,6 +101,10 @@ public class FieldDescriptor<M, V> implements FieldAccessor<M, V> {
 			return this;
 		}
 
+		public Builder<M, V> setReflectionAccessor(final Class<M> messageClass) {
+			return setAccessor(new ReflectionFieldAccessor<M, V>(name, messageClass));
+		}
+
 		public FieldDescriptor<M, V> build() {
 			return new FieldDescriptor<M, V>(this);
 		}

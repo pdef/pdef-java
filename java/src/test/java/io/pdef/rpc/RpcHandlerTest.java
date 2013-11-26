@@ -30,10 +30,10 @@ public class RpcHandlerTest {
 		when(service.method(1, 2)).thenReturn(3);
 		RpcRequest request = getRequest();
 
-		RpcResult<?> result = handler.handle(request);
-		assertTrue(result.isOk());
+		RpcResult<?, ?> result = handler.handle(request);
+		assertTrue(result.isSuccess());
 		assertEquals(3, result.getData());
-		assertEquals(Descriptors.int32, result.getDescriptor());
+		assertEquals(Descriptors.int32, result.getDataDescriptor());
 	}
 
 	@Test
@@ -42,10 +42,10 @@ public class RpcHandlerTest {
 		when(service.method(1, 2)).thenThrow(e);
 		RpcRequest request = getRequest();
 
-		RpcResult<?> result = handler.handle(request);
-		assertFalse(result.isOk());
-		assertEquals(e, result.getData());
-		assertEquals(TestException.DESCRIPTOR, result.getDescriptor());
+		RpcResult<?, ?> result = handler.handle(request);
+		assertFalse(result.isSuccess());
+		assertEquals(e, result.getError());
+		assertEquals(TestException.DESCRIPTOR, result.getErrorDescriptor());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

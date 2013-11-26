@@ -2,6 +2,10 @@ package io.pdef;
 
 import io.pdef.descriptors.MessageDescriptor;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.Map;
 
 public interface Message {
@@ -21,9 +25,19 @@ public interface Message {
 	String toJson();
 
 	/**
-	 * Serializes this method to a JSON string with optional indentation.
+	 * Serializes this message to a JSON string with optional indentation.
 	 */
 	String toJson(boolean indent);
+
+	/**
+	 * Serializes this message to JSON and writes to a writer.
+	 */
+	void toJson(PrintWriter writer, boolean indent);
+
+	/**
+	 * Serializes this message to JSON and writes to an input stream.
+	 */
+	void toJson(OutputStream stream, boolean indent);
 
 	/**
 	 * Returns a deep copy of this message.
@@ -33,5 +47,25 @@ public interface Message {
 	/**
 	 * Deeply copies all present fields from another message into this message.
 	 */
-	Message merge(Message message);
+	void merge(Message message);
+
+	/**
+	 * Parse a message from a map and merge it into this message.
+	 */
+	void merge(Map<String, Object> map);
+
+	/**
+	 * Parse a message from a JSON string and merge it into this message.
+	 */
+	void mergeJson(String s);
+
+	/**
+	 * Parse a message from a JSON reader and merge it into this message.
+	 */
+	void mergeJson(Reader reader);
+
+	/**
+	 * Parse a message from a JSON input stream and merge it into this message.
+	 */
+	void mergeJson(InputStream stream);
 }

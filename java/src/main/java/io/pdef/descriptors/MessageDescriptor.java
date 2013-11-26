@@ -156,6 +156,15 @@ public class MessageDescriptor<M extends Message> extends DataTypeDescriptor<M> 
 			return this;
 		}
 
+		public <V> Builder<M> addField(final String name, final DataTypeDescriptor<V> type,
+				final Class<M> messageClass) {
+			return addField(FieldDescriptor.<M, V>builder()
+					.setName(name)
+					.setType(type)
+					.setReflectionAccessor(messageClass)
+					.build());
+		}
+
 		public Builder<M> addField(final FieldDescriptor<M, ?> field) {
 			declaredFields.add(field);
 			return this;

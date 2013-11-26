@@ -9,38 +9,38 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ObjectFormat {
-	private static final ObjectFormat INSTANCE = new ObjectFormat();
+public class DataFormat {
+	private static final DataFormat INSTANCE = new DataFormat();
 	private final ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {
 		@Override
 		protected DateFormat initialValue() {
 			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			format.setTimeZone(tz);
 			return format;
 		}
 	};
 
-	private ObjectFormat() {}
+	private DataFormat() {}
 
-	public static ObjectFormat getInstance() {
+	public static DataFormat getInstance() {
 		return INSTANCE;
 	}
 
 	// Serializing.
 
 	@SuppressWarnings("unchecked")
-	public <T extends Message> Map<String, Object> toObject(final T message,
+	public <T extends Message> Map<String, Object> writeMessage(final T message,
 			final MessageDescriptor<T> descriptor) throws FormatException {
-		return (Map<String, Object>) this.toObject(message, (DataTypeDescriptor<T>) descriptor);
+		return (Map<String, Object>) this.write(message, descriptor);
 	}
 
-	public <T> Object toObject(final T object, final DataTypeDescriptor<T> descriptor)
+	public <T> Object write(final T object, final DataTypeDescriptor<T> descriptor)
 			throws FormatException {
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
 		try {
-			return write(object, descriptor);
+			return doWrite(object, descriptor);
 		} catch (FormatException e) {
 			throw e;
 		} catch (Exception e) {
@@ -49,7 +49,7 @@ public class ObjectFormat {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Object write(final T object, final DataTypeDescriptor<T> descriptor)
+	private <T> Object doWrite(final T object, final DataTypeDescriptor<T> descriptor)
 			throws Exception {
 		if (object == null) {
 			return null;
@@ -94,7 +94,7 @@ public class ObjectFormat {
 		List<Object> result = new ArrayList<Object>();
 
 		for (E elem : list) {
-			Object serialized = write(elem, element);
+			Object serialized = doWrite(elem, element);
 			result.add(serialized);
 		}
 
@@ -110,7 +110,7 @@ public class ObjectFormat {
 		DataTypeDescriptor<E> element = descriptor.getElement();
 		Set<Object> result = new HashSet<Object>();
 		for (E elem : set) {
-			Object serialized = write(elem, element);
+			Object serialized = doWrite(elem, element);
 			result.add(serialized);
 		}
 
@@ -128,8 +128,8 @@ public class ObjectFormat {
 		Map<Object, Object> result = new HashMap<Object, Object>();
 
 		for (Map.Entry<K, V> e : map.entrySet()) {
-			Object k = write(e.getKey(), key);
-			Object v = write(e.getValue(), value);
+			Object k = doWrite(e.getKey(), key);
+			Object v = doWrite(e.getValue(), value);
 			result.put(k, v);
 		}
 
@@ -167,18 +167,18 @@ public class ObjectFormat {
 			return;
 		}
 
-		Object serialized = write(value, field.getType());
+		Object serialized = doWrite(value, field.getType());
 		map.put(field.getName(), serialized);
 	}
 
 	// Parsing.
 
-	public <T> T fromObject(final Object input, final DataTypeDescriptor<T> descriptor)
+	public <T> T read(final Object data, final DataTypeDescriptor<T> descriptor)
 			throws FormatException {
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
 		try {
-			return read(descriptor, input);
+			return read(descriptor, data);
 		} catch (FormatException e) {
 			throw e;
 		} catch (Exception e) {

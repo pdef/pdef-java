@@ -53,7 +53,7 @@ public class HttpUrlConnectionRpcSessionTest {
 
 	@Test
 	public void testHandleResponse_readResult() throws Exception {
-		InputStream input = new ByteArrayInputStream("\"Привет\"".getBytes(UTF8));
+		InputStream input = new ByteArrayInputStream("{\"data\": \"Привет\"}".getBytes(UTF8));
 
 		HttpURLConnection connection = mock(HttpURLConnection.class);
 		when(connection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
@@ -66,7 +66,8 @@ public class HttpUrlConnectionRpcSessionTest {
 	@Test
 	public void testHandleResponse_readApplicationException() throws Exception {
 		TestException e = new TestException().setText("Привет");
-		InputStream input = new ByteArrayInputStream(e.toJson().getBytes(UTF8));
+		InputStream input = new ByteArrayInputStream("{\"error\": {\"text\": \"Привет\"}}"
+				.getBytes(UTF8));
 
 		HttpURLConnection connection = mock(HttpURLConnection.class);
 		when(connection.getResponseCode()).thenReturn(APPLICATION_EXC_STATUS);

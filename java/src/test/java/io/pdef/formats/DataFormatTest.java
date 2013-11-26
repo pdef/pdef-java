@@ -18,17 +18,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ObjectFormatTest {
-	private ObjectFormat format = ObjectFormat.getInstance();
+public class DataFormatTest {
+	private DataFormat format = DataFormat.getInstance();
 
 	private <T> void testPrimitive(final DataTypeDescriptor<T> descriptor, final String s,
 			final T expected) {
-		assert format.fromObject(null, descriptor) == null;
-		assert format.fromObject(s, descriptor).equals(expected);
-		assert format.fromObject(expected, descriptor).equals(expected);
+		assert format.read(null, descriptor) == null;
+		assert format.read(s, descriptor).equals(expected);
+		assert format.read(expected, descriptor).equals(expected);
 
-		assert format.toObject(null, descriptor) == null;
-		assert format.toObject(expected, descriptor).equals(expected);
+		assert format.write(null, descriptor) == null;
+		assert format.write(expected, descriptor).equals(expected);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class ObjectFormatTest {
 
 	@Test
 	public void testDatetime() throws Exception {
-		testPrimitive(Descriptors.datetime, "1970-01-01T00:00Z", new Date(0));
+		testPrimitive(Descriptors.datetime, "1970-01-01T00:00:00Z", new Date(0));
 	}
 
 	@Test
@@ -74,10 +74,10 @@ public class ObjectFormatTest {
 
 	private <T> void testValue(final DataTypeDescriptor<T> descriptor, final Object serialized,
 			final T parsed) {
-		assert format.fromObject(serialized, descriptor).equals(parsed);
-		assert format.fromObject(null, descriptor) == null;
-		assert format.toObject(null, descriptor) == null;
-		assert format.toObject(parsed, descriptor).equals(serialized);
+		assert format.read(serialized, descriptor).equals(parsed);
+		assert format.read(null, descriptor) == null;
+		assert format.write(null, descriptor) == null;
+		assert format.write(parsed, descriptor).equals(serialized);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class ObjectFormatTest {
 		EnumDescriptor<TestEnum> descriptor = TestEnum.DESCRIPTOR;
 
 		testValue(descriptor, TestEnum.TWO, TestEnum.TWO);
-		assertEquals(TestEnum.TWO, format.fromObject("two", descriptor));
+		assertEquals(TestEnum.TWO, format.read("two", descriptor));
 	}
 
 	@Test
