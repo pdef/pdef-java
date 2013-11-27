@@ -88,7 +88,7 @@ public class {{ message.name }} extends {{ message|jmessage_base }} {
 		if (!(message instanceof {{ message.name }})) return;
 
 		{{ message.name }} another = ({{ message.name }}) message;
-    {% for field in message.declared_fields %}
+    {% for field in message.declared_fields if not field.is_discriminator %}
         {% if field.type.is_collection or field.type.is_message %}
         if (another.{{ field.name }} != null) this.{{ field.name }} = io.pdef.DataTypes.copy(another.{{ field.name }});
         {% else %}

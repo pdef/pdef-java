@@ -16,6 +16,8 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	protected AbstractException(final AbstractException another) {}
 
+	// Copy all methods from the AbstractMessage.
+
 	@Override
 	public Map<String, Object> toMap() {
 		return DataFormat.getInstance().writeMessage(this, uncheckedDescriptor());
@@ -102,7 +104,7 @@ public abstract class AbstractException extends RuntimeException implements Mess
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		AbstractException cast = (AbstractException) o;
+		Message cast = (Message) o;
 		MessageDescriptor<Message> descriptor = uncheckedDescriptor();
 		for (FieldDescriptor<? super Message, ?> field : descriptor.getFields()) {
 			Object value0 = field.get(this);

@@ -3,6 +3,10 @@ package io.pdef;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import io.pdef.test.inheritance.Base;
+import io.pdef.test.inheritance.MultiLevelSubtype;
+import io.pdef.test.inheritance.PolymorphicType;
+import io.pdef.test.inheritance.Subtype;
 import io.pdef.test.messages.TestComplexMessage;
 import io.pdef.test.messages.TestEnum;
 import io.pdef.test.messages.TestMessage;
@@ -79,6 +83,36 @@ public class AbstractMessageTest {
 		another.merge(message);
 
 		assertEquals(message, another);
+	}
+
+	@Test
+	public void testMerge_superType() throws Exception {
+		Base base = new Base().setField("hello");
+		MultiLevelSubtype subtype = new MultiLevelSubtype();
+		subtype.merge(base);
+
+		assertEquals("hello", subtype.getField());
+	}
+
+	@Test
+	public void testMerge_subtype() throws Exception {
+		MultiLevelSubtype subtype = new MultiLevelSubtype().setField("hello");
+		Base base = new Base();
+		base.merge(subtype);
+
+		assertEquals("hello", base.getField());
+	}
+
+	@Test
+	public void testMerge_skipDicriminatorFields() throws Exception {
+		Subtype subtype = new Subtype();
+		assertEquals(PolymorphicType.SUBTYPE, subtype.getType());
+
+		MultiLevelSubtype msubtype = new MultiLevelSubtype();
+		assertEquals(PolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
+
+		msubtype.merge(subtype);
+		assertEquals(PolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
 	}
 
 	private TestComplexMessage createComplexMessage() {

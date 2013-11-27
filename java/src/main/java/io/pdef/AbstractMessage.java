@@ -102,7 +102,7 @@ public abstract class AbstractMessage implements Message, Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		AbstractMessage cast = (AbstractMessage) o;
+		Message cast = (Message) o;
 		MessageDescriptor<Message> descriptor = uncheckedDescriptor();
 		for (FieldDescriptor<? super Message, ?> field : descriptor.getFields()) {
 			Object value0 = field.get(this);
