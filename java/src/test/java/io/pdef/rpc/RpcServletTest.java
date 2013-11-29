@@ -30,8 +30,7 @@ public class RpcServletTest {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getMethod()).thenReturn(RpcRequest.GET);
 		when(request.getContextPath()).thenReturn("/my/app");
-		when(request.getServletPath()).thenReturn("/method1");
-		when(request.getPathInfo()).thenReturn("/method2");
+		when(request.getRequestURI()).thenReturn("/my/app/method1/method2");
 		when(request.getParameterMap()).thenReturn(ImmutableMap.of(
 				"key0", new String[]{"value0"},
 				"key1", new String[]{"value1", "value11"}));

@@ -30,11 +30,11 @@ public class {{ message.name }} extends {{ message|jmessage_base }} {
     }
 
     public static {{ message.name }} fromMap(final java.util.Map<String, Object> map) {
-        return io.pdef.formats.DataFormat.getInstance().read(map, DESCRIPTOR);
+        return io.pdef.json.JsonFormat.instance().readObject(map, DESCRIPTOR);
     }
 
     public static {{ message.name }} fromJson(final String s) {
-        return io.pdef.formats.JsonFormat.getInstance().read(s, DESCRIPTOR);
+        return io.pdef.json.JsonFormat.instance().read(s, DESCRIPTOR);
     }
 
 {% for field in message.declared_fields %}

@@ -76,6 +76,16 @@ public class RpcProtocolTest {
 		assertEquals("/string0/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82", request.getPath());
 	}
 
+	@Test
+	public void testGetRequest_urlencodePathArgsWithSlashes() throws Exception {
+		AtomicReference<Invocation> ref = Atomics.newReference();
+		proxy(ref).string0("Привет/мир");
+
+		RpcRequest request = protocol.getRequest(ref.get());
+		assertEquals("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80",
+				request.getPath());
+	}
+
 	// write.
 
 	@Test
@@ -157,6 +167,16 @@ public class RpcProtocolTest {
 		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
 		assertEquals(stringMethod(), invocation.getMethod());
 		assertArrayEquals(new Object[]{"Привет"}, invocation.getArgs());
+	}
+
+	@Test
+	public void testGetInvocation_urldecodePathArgsWithSlashes() throws Exception {
+		RpcRequest request = new RpcRequest()
+				.setPath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80");
+
+		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		assertEquals(stringMethod(), invocation.getMethod());
+		assertArrayEquals(new Object[]{"Привет/мир"}, invocation.getArgs());
 	}
 
 	// read

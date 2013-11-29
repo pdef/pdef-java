@@ -134,18 +134,18 @@ public class AbstractMessageTest {
 
 	private Map<String, Object> createComplexMessageMap() {
 		return ImmutableMap.<String, Object>builder()
-				.put("enum0", TestEnum.THREE)
+				.put("string0", "hello")
 				.put("bool0", true)
 				.put("int0", -32)
 				.put("short0", (short) -16)
 				.put("long0", -64L)
 				.put("float0", -1.5f)
 				.put("double0", -2.5d)
-				.put("string0", "hello")
-				.put("datetime0", new Date(0))
+				.put("datetime0", "1970-01-01T00:00:00Z")
 				.put("list0", ImmutableList.of(1, 2))
 				.put("set0", ImmutableSet.of(1, 2))
-				.put("map0", ImmutableMap.of(1, 1.5f))
+				.put("map0", ImmutableMap.of("1", 1.5f))
+				.put("enum0", "three")
 				.build();
 	}
 }

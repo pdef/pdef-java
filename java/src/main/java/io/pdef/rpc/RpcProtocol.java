@@ -2,7 +2,7 @@ package io.pdef.rpc;
 
 import io.pdef.*;
 import io.pdef.descriptors.*;
-import io.pdef.formats.JsonFormat;
+import io.pdef.json.JsonFormat;
 import io.pdef.Invocation;
 
 import java.io.UnsupportedEncodingException;
@@ -15,7 +15,7 @@ public class RpcProtocol {
 	private final JsonFormat format;
 
 	public RpcProtocol() {
-		this(JsonFormat.getInstance());
+		this(JsonFormat.instance());
 	}
 
 	public RpcProtocol(final JsonFormat format) {

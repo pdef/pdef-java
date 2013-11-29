@@ -1,4 +1,4 @@
-package io.pdef.formats;
+package io.pdef.json;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import java.util.Date;
 
 public class JsonFormatTest {
-	private JsonFormat format = JsonFormat.getInstance();
+	private JsonFormat format = JsonFormat.instance();
 
 	private <T> void test(final DataTypeDescriptor<T> descriptor, final T parsed,
 			final String serialized) {

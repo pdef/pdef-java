@@ -2,8 +2,7 @@ package io.pdef;
 
 import io.pdef.descriptors.FieldDescriptor;
 import io.pdef.descriptors.MessageDescriptor;
-import io.pdef.formats.DataFormat;
-import io.pdef.formats.JsonFormat;
+import io.pdef.json.JsonFormat;
 
 import java.io.*;
 import java.util.Map;
@@ -20,7 +19,7 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	@Override
 	public Map<String, Object> toMap() {
-		return DataFormat.getInstance().writeMessage(this, uncheckedDescriptor());
+		return JsonFormat.instance().writeMessage(this, uncheckedDescriptor());
 	}
 
 	@Override
@@ -30,17 +29,17 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	@Override
 	public String toJson(final boolean indent) {
-		return JsonFormat.getInstance().write(this, uncheckedDescriptor(), indent);
+		return JsonFormat.instance().write(this, uncheckedDescriptor(), indent);
 	}
 
 	@Override
 	public void toJson(final PrintWriter writer, final boolean indent) {
-		JsonFormat.getInstance().write(writer, this, uncheckedDescriptor(), indent);
+		JsonFormat.instance().write(writer, this, uncheckedDescriptor(), indent);
 	}
 
 	@Override
 	public void toJson(final OutputStream stream, final boolean indent) {
-		JsonFormat.getInstance().write(stream, this, uncheckedDescriptor(), indent);
+		JsonFormat.instance().write(stream, this, uncheckedDescriptor(), indent);
 	}
 
 	@Override
@@ -55,25 +54,25 @@ public abstract class AbstractException extends RuntimeException implements Mess
 
 	@Override
 	public void merge(final Map<String, Object> map) {
-		Message message = DataFormat.getInstance().read(map, uncheckedDescriptor());
+		Message message = JsonFormat.instance().readObject(map, uncheckedDescriptor());
 		merge(message);
 	}
 
 	@Override
 	public void mergeJson(final String s) {
-		Message message = JsonFormat.getInstance().read(s, uncheckedDescriptor());
+		Message message = JsonFormat.instance().read(s, uncheckedDescriptor());
 		merge(message);
 	}
 
 	@Override
 	public void mergeJson(final Reader reader) {
-		Message message = JsonFormat.getInstance().read(reader, uncheckedDescriptor());
+		Message message = JsonFormat.instance().read(reader, uncheckedDescriptor());
 		merge(message);
 	}
 
 	@Override
 	public void mergeJson(final InputStream stream) {
-		Message message = JsonFormat.getInstance().read(stream, uncheckedDescriptor());
+		Message message = JsonFormat.instance().read(stream, uncheckedDescriptor());
 		merge(message);
 	}
 

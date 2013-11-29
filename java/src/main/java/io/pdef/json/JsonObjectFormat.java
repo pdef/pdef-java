@@ -1,4 +1,4 @@
-package io.pdef.formats;
+package io.pdef.json;
 
 import io.pdef.Message;
 import io.pdef.TypeEnum;
@@ -9,8 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class DataFormat {
-	private static final DataFormat INSTANCE = new DataFormat();
+class JsonObjectFormat {
+	private static final JsonObjectFormat INSTANCE = new JsonObjectFormat();
 	private final ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>() {
 		@Override
 		protected DateFormat initialValue() {
@@ -21,39 +21,19 @@ public class DataFormat {
 		}
 	};
 
-	private DataFormat() {}
-
-	public static DataFormat getInstance() {
+	public static JsonObjectFormat getInstance() {
 		return INSTANCE;
 	}
+
+	private JsonObjectFormat() {}
 
 	// Serializing.
 
 	@SuppressWarnings("unchecked")
-	public <T extends Message> Map<String, Object> writeMessage(final T message,
-			final MessageDescriptor<T> descriptor) throws FormatException {
-		return (Map<String, Object>) this.write(message, descriptor);
-	}
-
 	public <T> Object write(final T object, final DataTypeDescriptor<T> descriptor)
-			throws FormatException {
-		if (descriptor == null) throw new NullPointerException("descriptor");
-
-		try {
-			return doWrite(object, descriptor);
-		} catch (FormatException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new FormatException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> Object doWrite(final T object, final DataTypeDescriptor<T> descriptor)
 			throws Exception {
-		if (object == null) {
-			return null;
-		}
+		if (descriptor == null) throw new NullPointerException("descriptor");
+		if (object == null) return null;
 
 		TypeEnum typeEnum = descriptor.getType();
 		switch (typeEnum) {
@@ -65,23 +45,22 @@ public class DataFormat {
 			case DOUBLE:
 			case STRING: return object;
 			case DATETIME: return writeDate((Date) object);
+			case ENUM: return writeEnum((Enum) object);
 			case LIST: return writeList((List) object, (ListDescriptor) descriptor);
 			case SET: return writeSet((Set) object, (SetDescriptor) descriptor);
 			case MAP: return writeMap((Map) object, (MapDescriptor) descriptor);
-			case ENUM: return writeEnum((Enum) object);
 			case MESSAGE: return writeMessage((Message) object);
 			case VOID: return null;
-			default:
-				throw new IllegalArgumentException("Unsupported descriptor " + descriptor);
+			default: throw new IllegalArgumentException("Unsupported descriptor " + descriptor);
 		}
 	}
 
-	private Date writeDate(final Date date) {
-		if (date == null) {
-			return null;
-		}
+	String writeDate(final Date date) {
+		return date == null ? "null" : dateFormat.get().format(date);
+	}
 
-		return new Date(date.getTime());
+	<E extends Enum<E>> String writeEnum(final E value) {
+		return value == null ? "null" : value.toString().toLowerCase();
 	}
 
 	private <E> List<Object> writeList(final List<E> list, final ListDescriptor<E> descriptor)
@@ -90,11 +69,11 @@ public class DataFormat {
 			return null;
 		}
 
-		DataTypeDescriptor<E> element = descriptor.getElement();
+		DataTypeDescriptor<E> elementd = descriptor.getElement();
 		List<Object> result = new ArrayList<Object>();
 
-		for (E elem : list) {
-			Object serialized = doWrite(elem, element);
+		for (E element : list) {
+			Object serialized = write(element, elementd);
 			result.add(serialized);
 		}
 
@@ -107,10 +86,10 @@ public class DataFormat {
 			return null;
 		}
 
-		DataTypeDescriptor<E> element = descriptor.getElement();
+		DataTypeDescriptor<E> elementd = descriptor.getElement();
 		Set<Object> result = new HashSet<Object>();
-		for (E elem : set) {
-			Object serialized = doWrite(elem, element);
+		for (E element : set) {
+			Object serialized = write(element, elementd);
 			result.add(serialized);
 		}
 
@@ -123,21 +102,41 @@ public class DataFormat {
 			return null;
 		}
 
-		DataTypeDescriptor<K> key = descriptor.getKey();
-		DataTypeDescriptor<V> value = descriptor.getValue();
+		DataTypeDescriptor<K> keyd = descriptor.getKey();
+		DataTypeDescriptor<V> valued = descriptor.getValue();
 		Map<Object, Object> result = new HashMap<Object, Object>();
 
 		for (Map.Entry<K, V> e : map.entrySet()) {
-			Object k = doWrite(e.getKey(), key);
-			Object v = doWrite(e.getValue(), value);
+			K key = e.getKey();
+			V value = e.getValue();
+			if (key == null) {
+				throw new JsonFormatException("Null map key");
+			}
+
+			String k = writeMapKey(key, keyd);
+			Object v = write(value, valued);
 			result.put(k, v);
 		}
 
 		return result;
 	}
 
-	private <E extends Enum<E>> E writeEnum(final E value) {
-		return value;
+	public <K> String writeMapKey(final K key, final DataTypeDescriptor<K> descriptor) {
+		if (key == null) {
+			throw new JsonFormatException("Null map key, must be a pdef primitive.");
+		}
+
+		switch (descriptor.getType()) {
+			case BOOL: return ((Boolean) key) ? "true" : "false";
+			case INT16:
+			case INT32:
+			case INT64:
+			case FLOAT:
+			case DOUBLE:
+			case STRING: return key.toString();
+			case DATETIME: return dateFormat.get().format((Date) key);
+			default: throw new JsonFormatException("Unsupported map key descriptor " + descriptor);
+		}
 	}
 
 	private <M extends Message> Map<String, Object> writeMessage(final M message)
@@ -167,46 +166,41 @@ public class DataFormat {
 			return;
 		}
 
-		Object serialized = doWrite(value, field.getType());
+		Object serialized = write(value, field.getType());
 		map.put(field.getName(), serialized);
 	}
 
 	// Parsing.
 
-	public <T> T read(final Object data, final DataTypeDescriptor<T> descriptor)
-			throws FormatException {
+	public <T> T read(final Object object, final DataTypeDescriptor<T> descriptor)
+			throws Exception {
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
-		try {
-			return read(descriptor, data);
-		} catch (FormatException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new FormatException(e);
-		}
+		return doRead(object, descriptor);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T read(final DataTypeDescriptor<T> descriptor, final Object input) throws Exception {
-		if (input == null) {
+	private <T> T doRead(final Object object, final DataTypeDescriptor<T> descriptor)
+			throws Exception {
+		if (object == null) {
 			return null;
 		}
 
 		TypeEnum typeEnum = descriptor.getType();
 		switch (typeEnum) {
-			case BOOL: return (T) readBoolean(input);
-			case INT16: return (T) readShort(input);
-			case INT32: return (T) readInt(input);
-			case INT64: return (T) readLong(input);
-			case FLOAT: return (T) readFloat(input);
-			case DOUBLE: return (T) readDouble(input);
-			case STRING: return (T) readString(input);
-			case DATETIME: return (T) readDatetime(input);
-			case LIST: return (T) readList(input, (ListDescriptor<?>) descriptor);
-			case SET: return (T) readSet(input, (SetDescriptor<?>) descriptor);
-			case MAP: return (T) readMap(input, (MapDescriptor<?, ?>) descriptor);
-			case ENUM: return (T) readEnum(input, (EnumDescriptor<? extends Enum<?>>) descriptor);
-			case MESSAGE: return (T) readMessage(input, (MessageDescriptor<? extends Message>) descriptor);
+			case BOOL: return (T) readBoolean(object);
+			case INT16: return (T) readShort(object);
+			case INT32: return (T) readInt(object);
+			case INT64: return (T) readLong(object);
+			case FLOAT: return (T) readFloat(object);
+			case DOUBLE: return (T) readDouble(object);
+			case STRING: return (T) readString(object);
+			case DATETIME: return (T) readDatetime(object);
+			case LIST: return (T) readList(object, (ListDescriptor<?>) descriptor);
+			case SET: return (T) readSet(object, (SetDescriptor<?>) descriptor);
+			case MAP: return (T) readMap(object, (MapDescriptor<?, ?>) descriptor);
+			case ENUM: return (T) readEnum(object, (EnumDescriptor<? extends Enum<?>>) descriptor);
+			case MESSAGE: return (T) readMessage(object, (MessageDescriptor<? extends Message>) descriptor);
 			case VOID: return null;
 			default: throw new IllegalArgumentException("Unsupported descriptor " + descriptor);
 		}
@@ -215,93 +209,75 @@ public class DataFormat {
 	private Boolean readBoolean(final Object input) {
 		if (input instanceof Boolean) {
 			return (Boolean) input;
-		} else if (input instanceof String) {
-			return Boolean.parseBoolean((String) input);
 		}
-		throw new FormatException("Cannot read a boolean from " + input);
+		return Boolean.parseBoolean((String) input);
 	}
 
 	private Short readShort(final Object input) {
 		if (input instanceof Number) {
 			return ((Number) input).shortValue();
-		} else if (input instanceof String) {
-			return Short.parseShort((String) input);
 		}
-		throw new FormatException("Cannot read a short from " + input);
+		return Short.parseShort((String) input);
 	}
 
 	private Integer readInt(final Object input) {
 		if (input instanceof Number) {
 			return ((Number) input).intValue();
-		} else if (input instanceof String) {
-			return Integer.parseInt((String) input);
 		}
-		throw new FormatException("Cannot read an int from " + input);
+		return Integer.parseInt((String) input);
 	}
 
 	private Long readLong(final Object input) {
 		if (input instanceof Number) {
 			return ((Number) input).longValue();
-		} else if (input instanceof String) {
-			return Long.parseLong((String) input);
 		}
-		throw new FormatException("Cannot read a long from " + input);
+		return Long.parseLong((String) input);
 	}
 
 	private Float readFloat(final Object input) {
 		if (input instanceof Number) {
 			return ((Number) input).floatValue();
-		} else if (input instanceof String) {
-			return Float.parseFloat((String) input);
 		}
-		throw new FormatException("Cannot read a float from " + input);
+		return Float.parseFloat((String) input);
 	}
 
 	private Double readDouble(final Object input) {
 		if (input instanceof Number) {
 			return ((Number) input).doubleValue();
-		} else if (input instanceof String) {
-			return Double.parseDouble((String) input);
 		}
-		throw new FormatException("Cannot read a double from " + input);
+		return Double.parseDouble((String) input);
 	}
 
 	private String readString(final Object input) {
 		if (input == null) {
 			return null;
-		} else if (input instanceof String) {
-			return (String) input;
 		}
-		throw new FormatException("Cannot read a string from " + input);
+		return (String) input;
 	}
 
-	private Date readDatetime(final Object input) {
-		if (input == null) {
-			return null;
-		} else if (input instanceof Date) {
-			return (Date) input;
-		} else if (input instanceof String) {
-			try {
-				return dateFormat.get().parse((String) input);
-			} catch (ParseException e) {
-				throw new FormatException("Failed to read a datetime from " + input, e);
-			}
+	private Date readDatetime(final Object input) throws ParseException {
+		if (input instanceof Date) {
+			return new Date(((Date) input).getTime());
 		}
-		throw new FormatException("Cannot read a datetime from " + input);
+		return dateFormat.get().parse((String) input);
+	}
+
+	private <T extends Enum<T>> T readEnum(final Object input,
+			final EnumDescriptor<T> descriptor) {
+		if (input instanceof Enum<?>) {
+			return descriptor.getJavaClass().cast(input);
+		}
+		return descriptor.getValue((String) input);
 	}
 
 	private <E> List<E> readList(final Object input, final ListDescriptor<E> descriptor)
 			throws Exception {
-		if (!(input instanceof Collection)) {
-			throw new FormatException("Cannot read a list from " + input);
-		}
-
 		Collection<?> collection = (Collection<?>) input;
-		DataTypeDescriptor<E> element = descriptor.getElement();
+		DataTypeDescriptor<E> elementd = descriptor.getElement();
 		List<E> result = new ArrayList<E>();
 
-		for (Object elem : collection) {
-			E parsed = read(element, elem);
+		for (Object element : collection) {
+			E parsed = doRead(element, elementd);
 			result.add(parsed);
 		}
 
@@ -310,16 +286,12 @@ public class DataFormat {
 
 	private <E> Set<E> readSet(final Object input, final SetDescriptor<E> descriptor)
 			throws Exception {
-		if (!(input instanceof Collection)) {
-			throw new FormatException("Cannot read a set from " + input);
-		}
-
 		Collection<?> collection = (Collection<?>) input;
 		Set<E> result = new HashSet<E>();
-		DataTypeDescriptor<E> element = descriptor.getElement();
+		DataTypeDescriptor<E> elementd = descriptor.getElement();
 
-		for (Object elem : collection) {
-			E parsed = read(element, elem);
+		for (Object element : collection) {
+			E parsed = doRead(element, elementd);
 			result.add(parsed);
 		}
 
@@ -328,40 +300,30 @@ public class DataFormat {
 
 	private <K, V> Map<K, V> readMap(final Object input, final MapDescriptor<K, V> descriptor)
 			throws Exception {
-		if (!(input instanceof Map)) {
-			throw new FormatException("Cannot read a map from " + input);
-		}
-
 		Map<?, ?> map = (Map<?, ?>) input;
 		Map<K, V> result = new HashMap<K, V>();
-		DataTypeDescriptor<K> key = descriptor.getKey();
-		DataTypeDescriptor<V> value = descriptor.getValue();
+		DataTypeDescriptor<K> keyd = descriptor.getKey();
+		DataTypeDescriptor<V> valued = descriptor.getValue();
 
 		for (Map.Entry<?, ?> e : map.entrySet()) {
-			K k = read(key, e.getKey());
-			V v = read(value, e.getValue());
+			Object key = e.getKey();
+			Object value = e.getValue();
+
+			K k = readMapKey(key, keyd);
+			V v = doRead(value, valued);
 			result.put(k, v);
 		}
 
 		return result;
 	}
 
-	private <T extends Enum<T>> T readEnum(final Object input,
-			final EnumDescriptor<T> descriptor) {
-		if (input instanceof Enum<?>) {
-			return descriptor.getJavaClass().cast(input);
-		} else if (input instanceof String) {
-			return descriptor.getValue((String) input);
-		}
-		throw new FormatException("Cannot read an enum from " + input);
+	public <K> K readMapKey(final Object key, final DataTypeDescriptor<K> descriptor)
+			throws Exception {
+		return doRead(key, descriptor);
 	}
 
 	private <M extends Message> M readMessage(final Object input,
 			MessageDescriptor<M> descriptor) throws Exception {
-		if (!(input instanceof Map)) {
-			throw new FormatException("Cannot read a map from " + input);
-		}
-
 		Map<?, ?> map = (Map<?, ?>) input;
 		FieldDescriptor<? super M, ?> discriminator = descriptor.getDiscriminator();
 
@@ -369,7 +331,7 @@ public class DataFormat {
 		if (discriminator != null) {
 			Object fieldValue = map.get(discriminator.getName());
 			if (fieldValue != null) {
-				Enum<?> discriminatorValue = (Enum<?>) read(discriminator.getType(), fieldValue);
+				Enum<?> discriminatorValue = (Enum<?>) doRead(fieldValue, discriminator.getType());
 				@SuppressWarnings("unchecked")
 				MessageDescriptor<M> subtype = (MessageDescriptor<M>) descriptor
 						.getSubtype(discriminatorValue);
@@ -391,7 +353,7 @@ public class DataFormat {
 	private <M extends Message, V> void parseField(final FieldDescriptor<M, V> field,
 			final M message, final Map<?, ?> map) throws Exception {
 		Object fieldInput = map.get(field.getName());
-		V value = read(field.getType(), fieldInput);
+		V value = doRead(fieldInput, field.getType());
 		field.set(message, value);
 	}
 }

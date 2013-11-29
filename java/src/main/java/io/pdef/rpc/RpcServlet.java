@@ -43,12 +43,17 @@ public final class RpcServlet<T> extends HttpServlet {
 	// VisibleForTesting
 	RpcRequest getRpcRequest(final HttpServletRequest request) {
 		String method = request.getMethod();
-		String path = nullToEmpty(request.getServletPath()) + nullToEmpty(request.getPathInfo());
-		Map<String, String> params = getParams(request);
+
+		String path = nullToEmpty(request.getRequestURI());
+		String context = nullToEmpty(request.getContextPath());
+		if (path.startsWith(context)) {
+			path = path.substring(context.length());
+		}
 
 		// In servlets we cannot distinguish between query and post params,
 		// so we use the same map for both. It is safe because Pdef HTTP RPC
 		// always uses only one of them.
+		Map<String, String> params = getParams(request);
 
 		return new RpcRequest()
 				.setMethod(method)
