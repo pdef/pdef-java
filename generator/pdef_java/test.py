@@ -1,4 +1,6 @@
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import unittest
 from pdef_java import JavaGenerator, JavaFilters, JAVA_NATIVE_REFS
 from pdefc.generators import Namespace
@@ -150,4 +152,4 @@ class TestJavaFilters(unittest.TestCase):
         ref = self.filters.jref(iface)
         assert ref.name == 'test.module.Interface'
         assert ref.descriptor == 'test.module.Interface.DESCRIPTOR'
-        assert ref.default is 'null'
+        assert ref.default == 'null'
