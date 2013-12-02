@@ -14,6 +14,7 @@ public class Main {
 
 		// Serialize a human to a JSON string.
 		String json = human.toJson();
+		human.toJson();
 	}
 
 	public static void client() {
