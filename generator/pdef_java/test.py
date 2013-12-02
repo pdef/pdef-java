@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import unittest
 from pdef_java import JavaGenerator, JavaFilters, JAVA_NATIVE_REFS
-from pdefc.generators import Namespace
+from pdefc.generators import ModuleMapper
 from pdefc.lang import *
 
 
@@ -57,10 +57,10 @@ class TestJavaGenerator(unittest.TestCase):
 
 class TestJavaFilters(unittest.TestCase):
     def setUp(self):
-        self.filters = JavaFilters(Namespace())
+        self.filters = JavaFilters(ModuleMapper())
 
     def test_jpackage(self):
-        self.filters.namespace = Namespace({'service': 'com.company.service'})
+        self.filters.module_mapper = ModuleMapper([('service', 'com.company.service')])
         module = Module('service.client.tests')
         ref = self.filters.jpackage(module)
 
@@ -76,7 +76,7 @@ class TestJavaFilters(unittest.TestCase):
 
         module = Module('test.module', definitions=[msg])
         module.link()
-        self.filters.namespace = Namespace({'test': 'com.company.test'})
+        self.filters.module_mapper = ModuleMapper([('test', 'com.company.test')])
 
         ref = self.filters.jref(msg)
         assert ref.name == 'com.company.test.module.Message'

@@ -12,8 +12,7 @@ Structure
 Requirements
 ------------
 - Java: Java 6+, Maven,
-- Code generator: [Pdef compiler 1.0+](https://github.com/pdef/pdef),
-  Python 2.6 or Python 3.3+ for the code generator.
+- Code generator: [Pdef compiler 1.0+](https://github.com/pdef/pdef), Python 2.6 or Python 3.3+.
 
 Installation
 ------------
@@ -24,7 +23,8 @@ $ [sudo] pip install pdef-java
 $ [sudo] easy_install pdef-java
 ```
 
-Or download the archive, unzip it and run the command in the generator directory:
+Or [download](https://github.com/pdef/pdef-java/releases) the release,
+unzip it and in the `generator` directory run:
 ```bash
 $ [sudo] python setup.py install
 ```
@@ -48,7 +48,7 @@ $ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
     --out target/generated-sources
 ```
 
-The generator supports namespaces passed as the `--ns` arguments to the compiler.
+The generator supports namespaces passed as the `--ns` arguments.
 Namespaces map pdef module names to java module names.
 ```bash
 $ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
@@ -93,10 +93,9 @@ another.merge(human);
 assert another.getName().equals(human.getName());
 ```
 
-Messages tries to be null-safe and return default values for null fields.
+Messages try to be null-safe and return default values for null fields.
 If a null field is a collection or a message then it is initialized to an empty
 object on the first access.
-
 ```java
 // All getters return the default values when the fields are not present or null.
 Human human = new Human();
@@ -143,7 +142,7 @@ PrintWriter writer = getWriter();
 human.toJson(writer, true);
 ```
 
-JSON parsing:
+Parsing:
 ```java
 // From a JSON compatible map (only JSON primitives and collections).
 Map<String, Object> map = new HashMap<>;
@@ -161,7 +160,7 @@ Human human1 = Human.fromJson(json);
 // Merging for parsing input streams and readers.
 ```
 
-Use JsonFormat to read/write other pdef data types:
+Use `JsonFormat` to read/write other pdef data types:
 ```java
 // Convert an int to a JSON string.
 String json = JsonFormat.write(Descriptors.int32, 123);

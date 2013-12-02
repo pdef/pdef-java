@@ -6,7 +6,7 @@ import os.path
 
 import pdefc
 from pdefc.lang import TypeEnum
-from pdefc.generators import Namespace, Generator, Templates, upper_first, mkdir_p
+from pdefc.generators import Generator, Templates, upper_first, mkdir_p
 
 
 UTF8 = 'utf8'
@@ -17,11 +17,11 @@ INTERFACE_TEMPLATE = 'interface.jinja2'
 
 
 class JavaGenerator(Generator):
-    '''Java code generator, supports namespaces.'''
-    def __init__(self, out, namespace=None, **kwargs):
-        super(JavaGenerator, self).__init__(out, namespace=namespace)
+    '''Java code generator, supports module names, does not support prefixes.'''
+    def __init__(self, out, module_names=None, **kwargs):
+        super(JavaGenerator, self).__init__(out, module_names=module_names)
 
-        self.filters = JavaFilters(self.namespace)
+        self.filters = JavaFilters(self.module_mapper)
         self.templates = Templates(__file__, filters=self.filters)
 
     def generate(self, package):
@@ -67,12 +67,12 @@ class JavaGenerator(Generator):
 
 class JavaFilters(object):
     '''Java filters for Jinja templates.'''
-    def __init__(self, namespace, prefix=None):
-        self.namespace = namespace
+    def __init__(self, module_mapper, prefix=None):
+        self.module_mapper = module_mapper
         self.prefix = prefix
 
     def jpackage(self, module):
-        return self.namespace(module.name)
+        return self.module_mapper(module.name)
 
     def jdescriptor(self, type0):
         return self.jref(type0).descriptor
