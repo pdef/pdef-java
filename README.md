@@ -16,28 +16,46 @@ Requirements
 
 Installation
 ------------
-Install the code generator as a python package:
-```bash
-$ [sudo] pip install pdef-java
-# or
-$ [sudo] easy_install pdef-java
-```
+- Code generator:
+    ```bash
+    $ [sudo] pip install pdef-java
+    # or
+    $ [sudo] easy_install pdef-java
+    ```
 
-Or [download](https://github.com/pdef/pdef-java/releases) the release,
-unzip it and in the `generator` directory run:
-```bash
-$ [sudo] python setup.py install
-```
+    Or [download](https://github.com/pdef/pdef-java/releases) the release,
+    unzip it and in the `generator` directory run:
+    ```bash
+    $ [sudo] python setup.py install
+    ```
 
-The java generator will appear in the installed generators:
-```bash
-$ pdefc generate -h
-usage: pdefc generate [-h] --generator {java} --out OUT [--ns NAMESPACE]
-                      [--include PATHS] [--allow-duplicate-definitions]
-                      package
-available generators:
-  - java: Java code generator, supports namespaces.
-```
+    The java generator will appear in the installed generators:
+    ```bash
+    $ pdefc generate -h
+    usage: pdefc generate [-h] --generator {java} --out OUT [--ns NAMESPACE]
+                          [--include PATHS] [--allow-duplicate-definitions]
+                          package
+    available generators:
+      - java: Java code generator, supports namespaces.
+    ```
+
+- Java package:
+    ```xml
+    <dependency>
+        <groupId>io.pdef</groupId>
+        <artifactId>pdef</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    ```
+
+    RPC servlet:
+    ```xml
+    <dependency>
+        <groupId>io.pdef</groupId>
+        <artifactId>pdef-servlet</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    ```
 
 Code generation
 ---------------
