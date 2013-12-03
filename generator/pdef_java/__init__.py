@@ -41,7 +41,7 @@ class JavaGenerator(Generator):
     def __init__(self, out, module_names=None, **kwargs):
         super(JavaGenerator, self).__init__(out, module_names=module_names)
 
-        self.filters = JavaFilters(self.module_mapper)
+        self.filters = _JavaFilters(self.module_mapper)
         self.templates = Templates(__file__, filters=self.filters)
 
     def generate(self, package):
@@ -85,7 +85,7 @@ class JavaGenerator(Generator):
         return os.path.join(dirname, filename)
 
 
-class JavaFilters(object):
+class _JavaFilters(object):
     '''Java filters for Jinja templates.'''
     def __init__(self, module_mapper, prefix=None):
         self.module_mapper = module_mapper
@@ -151,7 +151,7 @@ class JavaFilters(object):
         default = 'new java.util.ArrayList<%s>()' % element
         descriptor = 'io.pdef.descriptors.Descriptors.list(%s)' % element.descriptor
 
-        return JavaRef(name, descriptor, default=default)
+        return _JavaRef(name, descriptor, default=default)
 
     def _jset(self, type0):
         element = self.jref(type0.element)
@@ -160,7 +160,7 @@ class JavaFilters(object):
         default = 'new java.util.HashSet<%s>()' % element
         descriptor = 'io.pdef.descriptors.Descriptors.set(%s)' % element.descriptor
 
-        return JavaRef(name, descriptor, default=default)
+        return _JavaRef(name, descriptor, default=default)
 
     def _jmap(self, type0):
         key = self.jref(type0.key)
@@ -170,21 +170,21 @@ class JavaFilters(object):
         default = 'new java.util.HashMap<%s, %s>()' % (key, value)
         descr = 'io.pdef.descriptors.Descriptors.map(%s, %s)' % (key.descriptor, value.descriptor)
 
-        return JavaRef(name, descr, default=default)
+        return _JavaRef(name, descr, default=default)
 
     def _jenum_value(self, type0):
         name = '%s.%s' % (self.jref(type0.enum), type0.name)
-        return JavaRef(name, None)
+        return _JavaRef(name, None)
 
     def _jdefinition(self, type0):
         package = self.jpackage(type0.module)
         absolute_name = '%s.%s' % (package, type0.name)
         descriptor = '%s.DESCRIPTOR' % absolute_name
         default = ('new %s()' % absolute_name) if type0.is_message else 'null'
-        return JavaRef(absolute_name, descriptor, default=default)
+        return _JavaRef(absolute_name, descriptor, default=default)
 
 
-class JavaRef(object):
+class _JavaRef(object):
     def __init__(self, name, descriptor, default='null', unboxed=None):
         self.name = name
         self.descriptor = descriptor
@@ -201,13 +201,13 @@ class JavaRef(object):
 
 
 JAVA_NATIVE_REFS = {
-    TypeEnum.BOOL:  JavaRef('Boolean',  'io.pdef.descriptors.Descriptors.bool', 'false', 'boolean'),
-    TypeEnum.INT16: JavaRef('Short',    'io.pdef.descriptors.Descriptors.int16', '(short) 0', 'short'),
-    TypeEnum.INT32: JavaRef('Integer',  'io.pdef.descriptors.Descriptors.int32', '0', 'int'),
-    TypeEnum.INT64: JavaRef('Long',     'io.pdef.descriptors.Descriptors.int64', '0L', 'long'),
-    TypeEnum.FLOAT: JavaRef('Float',    'io.pdef.descriptors.Descriptors.float0', '0f', 'float'),
-    TypeEnum.DOUBLE: JavaRef('Double',  'io.pdef.descriptors.Descriptors.double0', '0.0', 'double'),
-    TypeEnum.STRING: JavaRef('String',  'io.pdef.descriptors.Descriptors.string', '""'),
-    TypeEnum.VOID: JavaRef('Void',      'io.pdef.descriptors.Descriptors.void0', 'null', 'void'),
-    TypeEnum.DATETIME: JavaRef('java.util.Date','io.pdef.descriptors.Descriptors.datetime','null')
+    TypeEnum.BOOL:  _JavaRef('Boolean',  'io.pdef.descriptors.Descriptors.bool', 'false', 'boolean'),
+    TypeEnum.INT16: _JavaRef('Short',    'io.pdef.descriptors.Descriptors.int16', '(short) 0', 'short'),
+    TypeEnum.INT32: _JavaRef('Integer',  'io.pdef.descriptors.Descriptors.int32', '0', 'int'),
+    TypeEnum.INT64: _JavaRef('Long',     'io.pdef.descriptors.Descriptors.int64', '0L', 'long'),
+    TypeEnum.FLOAT: _JavaRef('Float',    'io.pdef.descriptors.Descriptors.float0', '0f', 'float'),
+    TypeEnum.DOUBLE: _JavaRef('Double',  'io.pdef.descriptors.Descriptors.double0', '0.0', 'double'),
+    TypeEnum.STRING: _JavaRef('String',  'io.pdef.descriptors.Descriptors.string', '""'),
+    TypeEnum.VOID: _JavaRef('Void',      'io.pdef.descriptors.Descriptors.void0', 'null', 'void'),
+    TypeEnum.DATETIME: _JavaRef('java.util.Date','io.pdef.descriptors.Descriptors.datetime','null')
 }

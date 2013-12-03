@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import unittest
-from pdef_java import JavaGenerator, JavaFilters, JAVA_NATIVE_REFS
+from pdef_java import JavaGenerator, _JavaFilters, JAVA_NATIVE_REFS
 from pdefc.generators import ModuleMapper
 from pdefc.lang import *
 
@@ -57,7 +57,7 @@ class TestJavaGenerator(unittest.TestCase):
 
 class TestJavaFilters(unittest.TestCase):
     def setUp(self):
-        self.filters = JavaFilters(ModuleMapper())
+        self.filters = _JavaFilters(ModuleMapper())
 
     def test_jpackage(self):
         self.filters.module_mapper = ModuleMapper([('service', 'com.company.service')])
