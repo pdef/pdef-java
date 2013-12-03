@@ -32,13 +32,11 @@ Installation
     The java generator will appear in the installed generators:
     ```bash
     $ pdefc generate -h
-    usage: pdefc generate [-h] --generator {java} --out OUT [--ns NAMESPACE]
-                          [--include PATHS] [--allow-duplicate-definitions]
-                          package
+    usage: pdefc generate [...]
     available generators:
       - java: Java code generator, supports namespaces.
     ```
-
+    
 - Java package:
     ```xml
     <dependency>
@@ -66,13 +64,12 @@ $ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
     --out target/generated-sources
 ```
 
-The generator supports namespaces passed as the `--ns` arguments.
-Namespaces map pdef module names to java module names.
+The generator supports mapping pdef modules to java packages via the `--module` argument.
 ```bash
 $ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
     --generator java
-    --ns world:com.mycompany.world
-    --ns world.space:com.mycompany.common
+    --module world.space:com.mycompany.common
+    --module world:com.mycompany.world
     --out target/generated-sources
 ```
 
