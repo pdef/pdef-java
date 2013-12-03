@@ -209,6 +209,5 @@ JAVA_NATIVE_REFS = {
     TypeEnum.DOUBLE: JavaRef('Double',  'io.pdef.descriptors.Descriptors.double0', '0.0', 'double'),
     TypeEnum.STRING: JavaRef('String',  'io.pdef.descriptors.Descriptors.string', '""'),
     TypeEnum.VOID: JavaRef('Void',      'io.pdef.descriptors.Descriptors.void0', 'null', 'void'),
-    TypeEnum.DATETIME: JavaRef('java.util.Date','io.pdef.descriptors.Descriptors.datetime',
-                               'new java.util.Date(0)')
+    TypeEnum.DATETIME: JavaRef('java.util.Date','io.pdef.descriptors.Descriptors.datetime','null')
 }
