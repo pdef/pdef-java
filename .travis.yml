@@ -4,7 +4,9 @@ jdk:
   - openjdk7
 before_install:
   - sudo pip install nose
+install:
+  - sh -c 'cd generator && sudo python setup.py install'
 script:
-  - sh -c 'cd generator && sudo python setup.py install && nosetests'
+  - sh -c 'cd generator && nosetests'
   - sh -c 'cd java && mvn test'
 
