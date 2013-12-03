@@ -144,7 +144,7 @@
 									<arg value="generate" />
                                     <arg value="https://raw.github.com/pdef/pdef/master/test/test.yaml" />
 									<arg value="--generator=java" />
-									<arg value="--ns=pdef_test:io.pdef.test" />
+									<arg value="--module=pdef_test:io.pdef.test" />
 									<arg value="--out=target/generated-test-sources/pdef" />
 								</exec>
 							</tasks>

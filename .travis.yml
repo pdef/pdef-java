@@ -1,9 +1,9 @@
 language: java
 jdk:
   - openjdk6
-  - openjdk7
 before_install:
-  - cd python && python setup.py install
+  - sh -c 'cd generator && sudo python setup.py install && cd ../'
+  - sudo pip install nose
 script:
-  - cd java && mvn test
-  - cd python && nosetests
+  - nosetests generator
+  - sh -c 'cd java && mvn test && cd ../'
