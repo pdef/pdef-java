@@ -48,6 +48,6 @@ public class Main {
 	}
 
 	public static World getMyWorldImplementation() {
-		return null;
+		return new ExampleWorld();
 	}
 }
