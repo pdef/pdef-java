@@ -92,12 +92,13 @@ public class RpcProtocol {
 	/** Serializes an argument to JSON, strips the quotes. */
 	<V> String toJson(final DataTypeDescriptor<V> descriptor, final V arg) {
 		String s = format.write(arg, descriptor, false);
-		if (descriptor.getType() != TypeEnum.STRING) {
-			return s;
+		TypeEnum type = descriptor.getType();
+		if (type == TypeEnum.STRING || type == TypeEnum.ENUM || type == TypeEnum.DATETIME) {
+			// Remove the quotes.
+			s = s.substring(1, s.length() - 1);
 		}
 
-		// Remove the quotes.
-		return s.substring(1, s.length() - 1);
+		return s;
 	}
 
 	/** Parses an invocation from an rpc request. */
@@ -200,9 +201,12 @@ public class RpcProtocol {
 			return null;
 		}
 
-		if (descriptor.getType() == TypeEnum.STRING) {
-			// Strings are unquoted, return the quotes to parse them as valid json strings.
-			value = "\"" + value + "\"";
+		TypeEnum type = descriptor.getType();
+		if (type == TypeEnum.STRING || type == TypeEnum.DATETIME || type == TypeEnum.ENUM) {
+			if (!value.startsWith("\"") && !value.endsWith("\"")) {
+				// Return the quotes to parse a value as valid json strings.
+				value = "\"" + value + "\"";
+			}
 		}
 
 		return format.read(value, descriptor);

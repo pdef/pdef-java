@@ -24,10 +24,12 @@ import io.pdef.Invoker;
 import io.pdef.descriptors.Descriptors;
 import io.pdef.descriptors.MethodDescriptor;
 import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.messages.TestEnum;
 import io.pdef.test.messages.TestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -105,9 +107,21 @@ public class RpcProtocolTest {
 	// write.
 
 	@Test
-	public void testToJson_noQuotes() throws Exception {
+	public void testToJson_stringNoQuotes() throws Exception {
 		String result = protocol.toJson(Descriptors.string, "Привет,\" мир!");
 		assertEquals("Привет,\\\" мир!", result);
+	}
+
+	@Test
+	public void testToJson_datetimeNoQuotes() throws Exception {
+		String result = protocol.toJson(Descriptors.datetime, new Date(0));
+		assertEquals("1970-01-01T00:00:00Z", result);
+	}
+
+	@Test
+	public void testToJson_enumNoQuotes() throws Exception {
+		String result = protocol.toJson(TestEnum.DESCRIPTOR, TestEnum.ONE);
+		assertEquals("one", result);
 	}
 
 	// GetInvocation.

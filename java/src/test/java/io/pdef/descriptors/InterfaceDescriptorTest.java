@@ -27,7 +27,7 @@ public class InterfaceDescriptorTest {
 		InterfaceDescriptor<TestInterface> descriptor = TestInterface.DESCRIPTOR;
 		assertEquals(TestInterface.class, descriptor.getJavaClass());
 		assertEquals(TestException.DESCRIPTOR, descriptor.getExc());
-		assertEquals(11, descriptor.getMethods().size());
+		assertEquals(12, descriptor.getMethods().size());
 	}
 
 	@Test

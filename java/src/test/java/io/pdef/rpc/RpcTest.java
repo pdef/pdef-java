@@ -18,6 +18,7 @@ package io.pdef.rpc;
 
 import io.pdef.test.interfaces.TestException;
 import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.messages.TestEnum;
 import io.pdef.test.messages.TestMessage;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -92,6 +93,7 @@ public class RpcTest {
 		when(service.post(5, 6)).thenReturn(11);
 		when(service.string0("Привет")).thenReturn("Привет");
 		when(service.datetime0(date)).thenReturn(new Date(date.getTime()));
+		when(service.enum0(TestEnum.THREE)).thenReturn(TestEnum.THREE);
 		when(service.message0(message.copy())).thenReturn(message.copy());
 		when(service.interface0(1, 2)).thenReturn(service);
 		doThrow(new TestException().setText("Application exception")).when(service).exc0();
@@ -104,6 +106,7 @@ public class RpcTest {
 		assertEquals(11, (int) client.post(5, 6));
 		assertEquals("Привет", client.string0("Привет"));
 		assertEquals(date, client.datetime0(date));
+		assertEquals(TestEnum.THREE, client.enum0(TestEnum.THREE));
 		assertEquals(message, client.message0(message));
 		assertEquals(7, (int) client.interface0(1, 2).query(3, 4));
 
