@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import unittest
 from pdef_java import JavaGenerator, _JavaFilters, JAVA_NATIVE_REFS
-from pdefc.generators import ModuleMapper
+from pdefc.generators import ModuleMapper, PrefixMapper
 from pdefc.lang import *
 
 
@@ -57,7 +57,7 @@ class TestJavaGenerator(unittest.TestCase):
 
 class TestJavaFilters(unittest.TestCase):
     def setUp(self):
-        self.filters = _JavaFilters(ModuleMapper())
+        self.filters = _JavaFilters(ModuleMapper(), PrefixMapper())
 
     def test_jpackage(self):
         self.filters.module_mapper = ModuleMapper([('service', 'com.company.service')])
@@ -142,6 +142,18 @@ class TestJavaFilters(unittest.TestCase):
         assert ref.name == 'test.module.Message'
         assert ref.default == 'new test.module.Message()'
         assert ref.descriptor == 'test.module.Message.DESCRIPTOR'
+
+    def test_jmessage__with_prefix(self):
+        msg = Message('Message')
+
+        module = Module('test', definitions=[msg])
+        module.link()
+
+        self.filters.prefix_mapper = PrefixMapper([('test', 'Test')])
+        ref = self.filters.jref(msg)
+        assert ref.name == 'test.TestMessage'
+        assert ref.default == 'new test.TestMessage()'
+        assert ref.descriptor == 'test.TestMessage.DESCRIPTOR'
 
     def test_jinterface(self):
         iface = Interface('Interface')

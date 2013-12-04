@@ -4,12 +4,12 @@ package {{ enum.module|jpackage}};
 {% if enum.doc %}
 /** {{ enum.doc }} */
 {% endif %}
-public enum {{ enum.name }} {
+public enum {{ enum|jname }} {
 {{ "    " }}{% for value in enum.values -%}
     {{ value.name }}{% if not loop.last and loop.length > 1 %}, {% endif %}
     {%- endfor %};
 
-    public static final io.pdef.descriptors.EnumDescriptor<{{ enum.name }}> DESCRIPTOR =
-            io.pdef.descriptors.EnumDescriptor.of({{ enum.name }}.class);
+    public static final io.pdef.descriptors.EnumDescriptor<{{ enum|jname }}> DESCRIPTOR =
+            io.pdef.descriptors.EnumDescriptor.of({{ enum|jname }}.class);
 }
 

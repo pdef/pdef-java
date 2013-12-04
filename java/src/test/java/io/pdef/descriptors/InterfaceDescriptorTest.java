@@ -16,25 +16,25 @@
 
 package io.pdef.descriptors;
 
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.interfaces.PdefTestException;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class InterfaceDescriptorTest {
 	@Test
 	public void test() throws Exception {
-		InterfaceDescriptor<TestInterface> descriptor = TestInterface.DESCRIPTOR;
-		assertEquals(TestInterface.class, descriptor.getJavaClass());
-		assertEquals(TestException.DESCRIPTOR, descriptor.getExc());
+		InterfaceDescriptor<PdefTestInterface> descriptor = PdefTestInterface.DESCRIPTOR;
+		assertEquals(PdefTestInterface.class, descriptor.getJavaClass());
+		assertEquals(PdefTestException.DESCRIPTOR, descriptor.getExc());
 		assertEquals(12, descriptor.getMethods().size());
 	}
 
 	@Test
 	public void testFindDescriptor() throws Exception {
 		InterfaceDescriptor descriptor = Descriptors.findInterfaceDescriptor(
-				TestInterface.class);
-		assertTrue(descriptor == TestInterface.DESCRIPTOR);
+				PdefTestInterface.class);
+		assertTrue(descriptor == PdefTestInterface.DESCRIPTOR);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

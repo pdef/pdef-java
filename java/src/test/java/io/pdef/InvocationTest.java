@@ -17,9 +17,9 @@
 package io.pdef;
 
 import io.pdef.descriptors.MethodDescriptor;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
@@ -40,7 +40,7 @@ public class InvocationTest {
 
 	@Test
 	public void testConstructor_copyArgs() throws Exception {
-		TestMessage message = new TestMessage()
+		PdefTestMessage message = new PdefTestMessage()
 				.setBool0(true)
 				.setString0("hello")
 				.setInt0(-16);
@@ -69,7 +69,7 @@ public class InvocationTest {
 
 	@Test
 	public void testInvoke() throws Exception {
-		TestInterface iface = mock(TestInterface.class);
+		PdefTestInterface iface = mock(PdefTestInterface.class);
 		when(iface.method(1, 2)).thenReturn(3);
 
 		Invocation invocation = Invocation.root(method(), new Object[]{1, 2});
@@ -79,7 +79,7 @@ public class InvocationTest {
 
 	@Test
 	public void testInvoke_chained() throws Exception {
-		TestInterface iface = mock(TestInterface.class, RETURNS_DEEP_STUBS);
+		PdefTestInterface iface = mock(PdefTestInterface.class, RETURNS_DEEP_STUBS);
 		when(iface.interface0(1, 2).string0("world")).thenReturn("goodbye");
 
 		Invocation invocation = Invocation
@@ -90,32 +90,32 @@ public class InvocationTest {
 		assertEquals("goodbye", result);
 	}
 
-	@Test(expected = TestException.class)
+	@Test(expected = PdefTestException.class)
 	public void testInvoke_exc() throws Exception {
-		TestInterface iface = mock(TestInterface.class);
-		doThrow(new TestException()).when(iface).exc0();
+		PdefTestInterface iface = mock(PdefTestInterface.class);
+		doThrow(new PdefTestException()).when(iface).exc0();
 		Invocation invocation = Invocation.root(excMethod(), new Object[]{});
 
 		invocation.invoke(iface);
 	}
 
 	private MethodDescriptor<?, ?> method() {
-		return TestInterface.DESCRIPTOR.getMethod("method");
+		return PdefTestInterface.DESCRIPTOR.getMethod("method");
 	}
 
 	private MethodDescriptor<?, ?> messageMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("message0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("message0");
 	}
 
 	private MethodDescriptor<?, ?> interfaceMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("interface0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("interface0");
 	}
 
 	private MethodDescriptor<?, ?> stringMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("string0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("string0");
 	}
 
 	private MethodDescriptor<?, ?> excMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("exc0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("exc0");
 	}
 }

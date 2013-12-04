@@ -19,13 +19,13 @@ package io.pdef;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.pdef.test.inheritance.Base;
-import io.pdef.test.inheritance.MultiLevelSubtype;
-import io.pdef.test.inheritance.PolymorphicType;
-import io.pdef.test.inheritance.Subtype;
-import io.pdef.test.messages.TestComplexMessage;
-import io.pdef.test.messages.TestEnum;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.inheritance.PdefBase;
+import io.pdef.test.inheritance.PdefMultiLevelSubtype;
+import io.pdef.test.inheritance.PdefPolymorphicType;
+import io.pdef.test.inheritance.PdefSubtype;
+import io.pdef.test.messages.PdefTestComplexMessage;
+import io.pdef.test.messages.PdefTestEnum;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testHashCode() throws Exception {
-		TestComplexMessage msg = createComplexMessage();
+		PdefTestComplexMessage msg = createComplexMessage();
 		int h = msg.hashCode();
 		assertTrue(h != 0);
 		assertEquals(h, createComplexMessage().hashCode());
@@ -59,18 +59,18 @@ public class AbstractMessageTest {
 	@Test
 	public void testFromMap() throws Exception {
 		Map<String, Object> map = createComplexMessageMap();
-		Message msg = TestComplexMessage.fromMap(map);
+		Message msg = PdefTestComplexMessage.fromMap(map);
 		Message expected = createComplexMessage();
 		assertEquals(expected, msg);
 	}
 
 	@Test
 	public void testInitNullFields() throws Exception {
-		TestComplexMessage message = new TestComplexMessage();
+		PdefTestComplexMessage message = new PdefTestComplexMessage();
 		List<Integer> list = message.getList0();
 		Set<Integer> set = message.getSet0();
 		Map<Integer, Float> map = message.getMap0();
-		TestMessage testMessage = message.getMessage0();
+		PdefTestMessage testMessage = message.getMessage0();
 
 		assertNotNull(list);
 		assertNotNull(set);
@@ -85,8 +85,8 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testCopy() throws Exception {
-		TestComplexMessage message = createComplexMessage();
-		TestComplexMessage copy = message.copy();
+		PdefTestComplexMessage message = createComplexMessage();
+		PdefTestComplexMessage copy = message.copy();
 
 		assertEquals(message, copy);
 		assertNotSame(message, copy);
@@ -94,8 +94,8 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testMerge() throws Exception {
-		TestComplexMessage message = createComplexMessage();
-		TestComplexMessage another = new TestComplexMessage();
+		PdefTestComplexMessage message = createComplexMessage();
+		PdefTestComplexMessage another = new PdefTestComplexMessage();
 		another.merge(message);
 
 		assertEquals(message, another);
@@ -103,8 +103,8 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testMerge_superType() throws Exception {
-		Base base = new Base().setField("hello");
-		MultiLevelSubtype subtype = new MultiLevelSubtype();
+		PdefBase base = new PdefBase().setField("hello");
+		PdefMultiLevelSubtype subtype = new PdefMultiLevelSubtype();
 		subtype.merge(base);
 
 		assertEquals("hello", subtype.getField());
@@ -112,8 +112,8 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testMerge_subtype() throws Exception {
-		MultiLevelSubtype subtype = new MultiLevelSubtype().setField("hello");
-		Base base = new Base();
+		PdefMultiLevelSubtype subtype = new PdefMultiLevelSubtype().setField("hello");
+		PdefBase base = new PdefBase();
 		base.merge(subtype);
 
 		assertEquals("hello", base.getField());
@@ -121,19 +121,19 @@ public class AbstractMessageTest {
 
 	@Test
 	public void testMerge_skipDicriminatorFields() throws Exception {
-		Subtype subtype = new Subtype();
-		assertEquals(PolymorphicType.SUBTYPE, subtype.getType());
+		PdefSubtype subtype = new PdefSubtype();
+		assertEquals(PdefPolymorphicType.SUBTYPE, subtype.getType());
 
-		MultiLevelSubtype msubtype = new MultiLevelSubtype();
-		assertEquals(PolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
+		PdefMultiLevelSubtype msubtype = new PdefMultiLevelSubtype();
+		assertEquals(PdefPolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
 
 		msubtype.merge(subtype);
-		assertEquals(PolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
+		assertEquals(PdefPolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getType());
 	}
 
-	private TestComplexMessage createComplexMessage() {
-		return new TestComplexMessage()
-				.setEnum0(TestEnum.THREE)
+	private PdefTestComplexMessage createComplexMessage() {
+		return new PdefTestComplexMessage()
+				.setEnum0(PdefTestEnum.THREE)
 				.setBool0(true)
 				.setInt0(-32)
 				.setShort0((short) -16)

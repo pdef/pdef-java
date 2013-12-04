@@ -16,9 +16,9 @@
 
 package io.pdef.descriptors;
 
+import io.pdef.test.interfaces.PdefTestInterface;
 import org.junit.Test;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestException;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -26,19 +26,19 @@ import static org.mockito.Mockito.*;
 public class MethodDescriptorTest {
 	@Test
 	public void testGetName() throws Exception {
-		MethodDescriptor<TestInterface, ?> method = method();
+		MethodDescriptor<PdefTestInterface, ?> method = method();
 		assertNotNull(method);
 		assertEquals("method", method.getName());
 	}
 
 	@Test
 	public void testIndexPostTerminal() throws Exception {
-		MethodDescriptor<TestInterface, ?> index = method();
-		MethodDescriptor<TestInterface, ?> query = TestInterface.DESCRIPTOR.getMethod(
+		MethodDescriptor<PdefTestInterface, ?> index = method();
+		MethodDescriptor<PdefTestInterface, ?> query = PdefTestInterface.DESCRIPTOR.getMethod(
 				"query");
-		MethodDescriptor<TestInterface, ?> post = TestInterface.DESCRIPTOR.getMethod(
+		MethodDescriptor<PdefTestInterface, ?> post = PdefTestInterface.DESCRIPTOR.getMethod(
 				"post");
-		MethodDescriptor<TestInterface, ?> iface = TestInterface.DESCRIPTOR.getMethod(
+		MethodDescriptor<PdefTestInterface, ?> iface = PdefTestInterface.DESCRIPTOR.getMethod(
 				"interface0");
 
 		assertTrue(index.isTerminal());
@@ -56,27 +56,27 @@ public class MethodDescriptorTest {
 
 	@Test
 	public void testInvoke() throws Exception {
-		MethodDescriptor<TestInterface, ?> method = method();
+		MethodDescriptor<PdefTestInterface, ?> method = method();
 		assert method != null;
 
-		TestInterface object = mock(TestInterface.class);
+		PdefTestInterface object = mock(PdefTestInterface.class);
 		method.invoke(object, new Object[] {1, 2});
 		verify(object).method(1, 2);
 	}
 
-	@Test(expected = TestException.class)
+	@Test(expected = PdefTestException.class)
 	public void testInvoke_exception() throws Exception {
-		MethodDescriptor<TestInterface, ?> method = TestInterface.DESCRIPTOR.getMethod(
+		MethodDescriptor<PdefTestInterface, ?> method = PdefTestInterface.DESCRIPTOR.getMethod(
 				"exc0");
 		assert method != null;
 
-		TestInterface object = mock(TestInterface.class);
-		doThrow(new TestException()).when(object).exc0();
+		PdefTestInterface object = mock(PdefTestInterface.class);
+		doThrow(new PdefTestException()).when(object).exc0();
 
 		method.invoke(object, null);
 	}
 
-	private MethodDescriptor<TestInterface, ?> method() {
-		return TestInterface.DESCRIPTOR.getMethod("method");
+	private MethodDescriptor<PdefTestInterface, ?> method() {
+		return PdefTestInterface.DESCRIPTOR.getMethod("method");
 	}
 }

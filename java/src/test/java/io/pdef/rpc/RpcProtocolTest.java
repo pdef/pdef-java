@@ -23,9 +23,9 @@ import io.pdef.InvocationProxy;
 import io.pdef.Invoker;
 import io.pdef.descriptors.Descriptors;
 import io.pdef.descriptors.MethodDescriptor;
-import io.pdef.test.interfaces.TestInterface;
-import io.pdef.test.messages.TestEnum;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.messages.PdefTestEnum;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -120,7 +120,7 @@ public class RpcProtocolTest {
 
 	@Test
 	public void testToJson_enumNoQuotes() throws Exception {
-		String result = protocol.toJson(TestEnum.DESCRIPTOR, TestEnum.ONE);
+		String result = protocol.toJson(PdefTestEnum.DESCRIPTOR, PdefTestEnum.ONE);
 		assertEquals("one", result);
 	}
 
@@ -130,7 +130,7 @@ public class RpcProtocolTest {
 	public void testGetInvocation() throws Exception {
 		RpcRequest request = new RpcRequest().setPath("/method/1/2/");
 
-		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals("method", invocation.getMethod().getName());
 		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
 	}
@@ -141,7 +141,7 @@ public class RpcProtocolTest {
 				.setPath("/query")
 				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
 
-		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(queryMethod(), invocation.getMethod());
 		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
 	}
@@ -153,7 +153,7 @@ public class RpcProtocolTest {
 				.setPath("/post")
 				.setPost(ImmutableMap.of("arg0", "1", "arg1", "2"));
 
-		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(postMethod(), invocation.getMethod());
 		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
 	}
@@ -162,7 +162,7 @@ public class RpcProtocolTest {
 	public void testGetInvocation_postMethod_getNotAllowed() throws Exception {
 		RpcRequest request = new RpcRequest().setPath("/post");
 
-		protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 	}
 
 	@Test
@@ -170,7 +170,7 @@ public class RpcProtocolTest {
 		RpcRequest request = new RpcRequest().setPath("/interface0/1/2/query/")
 				.setQuery(ImmutableMap.of("arg0", "3", "arg1", "4"));
 
-		List<Invocation> chain = protocol.getInvocation(request, TestInterface.DESCRIPTOR).toChain();
+		List<Invocation> chain = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR).toChain();
 		assertEquals(2, chain.size());
 
 		Invocation invocation0 = chain.get(0);
@@ -186,7 +186,7 @@ public class RpcProtocolTest {
 	public void testGetInvocation_lastMethodNotTerminal() throws Exception {
 		RpcRequest request = new RpcRequest().setPath("/interface0/1/2");
 
-		protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 	}
 
 	@Test
@@ -194,7 +194,7 @@ public class RpcProtocolTest {
 		RpcRequest request = new RpcRequest()
 				.setPath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
 
-		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(stringMethod(), invocation.getMethod());
 		assertArrayEquals(new Object[]{"Привет"}, invocation.getArgs());
 	}
@@ -204,7 +204,7 @@ public class RpcProtocolTest {
 		RpcRequest request = new RpcRequest()
 				.setPath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80");
 
-		Invocation invocation = protocol.getInvocation(request, TestInterface.DESCRIPTOR);
+		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(stringMethod(), invocation.getMethod());
 		assertArrayEquals(new Object[]{"Привет/мир"}, invocation.getArgs());
 	}
@@ -213,12 +213,12 @@ public class RpcProtocolTest {
 
 	@Test
 	public void testFromJson() throws Exception {
-		TestMessage expected = new TestMessage()
+		PdefTestMessage expected = new PdefTestMessage()
 				.setString0("Привет")
 				.setBool0(true)
 				.setInt0(123);
 		String json = expected.toJson();
-		TestMessage result = protocol.fromJson(TestMessage.DESCRIPTOR, json);
+		PdefTestMessage result = protocol.fromJson(PdefTestMessage.DESCRIPTOR, json);
 		assertEquals(expected, result);
 	}
 
@@ -228,7 +228,7 @@ public class RpcProtocolTest {
 		assertEquals("Привет", result);
 	}
 
-	private TestInterface proxy(final AtomicReference<Invocation> ref) {
+	private PdefTestInterface proxy(final AtomicReference<Invocation> ref) {
 		return proxy(new Invoker() {
 			@Override
 			public Object invoke(final Invocation invocation) {
@@ -238,27 +238,27 @@ public class RpcProtocolTest {
 		});
 	}
 
-	private TestInterface proxy(final Invoker handler) {
-		return InvocationProxy.create(TestInterface.DESCRIPTOR, handler);
+	private PdefTestInterface proxy(final Invoker handler) {
+		return InvocationProxy.create(PdefTestInterface.DESCRIPTOR, handler);
 	}
 
 	private MethodDescriptor<?, ?> method() {
-		return TestInterface.DESCRIPTOR.getMethod("method");
+		return PdefTestInterface.DESCRIPTOR.getMethod("method");
 	}
 
 	private MethodDescriptor<?, ?> queryMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("query");
+		return PdefTestInterface.DESCRIPTOR.getMethod("query");
 	}
 
 	private MethodDescriptor<?, ?> postMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("post");
+		return PdefTestInterface.DESCRIPTOR.getMethod("post");
 	}
 
 	private MethodDescriptor<?, ?> stringMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("string0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("string0");
 	}
 
 	private MethodDescriptor<?, ?> interfaceMethod() {
-		return TestInterface.DESCRIPTOR.getMethod("interface0");
+		return PdefTestInterface.DESCRIPTOR.getMethod("interface0");
 	}
 }

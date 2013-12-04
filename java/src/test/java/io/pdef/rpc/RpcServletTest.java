@@ -18,8 +18,8 @@ package io.pdef.rpc;
 
 import com.google.common.collect.ImmutableMap;
 import io.pdef.descriptors.Descriptors;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.interfaces.PdefTestInterface;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,13 +32,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 
 public class RpcServletTest {
-	@Mock RpcHandler<TestInterface> handler;
-	RpcServlet<TestInterface> servlet;
+	@Mock RpcHandler<PdefTestInterface> handler;
+	RpcServlet<PdefTestInterface> servlet;
 
 	@Before
 	public void setUp() throws Exception {
 		initMocks(this);
-		servlet = new RpcServlet<TestInterface>(handler);
+		servlet = new RpcServlet<PdefTestInterface>(handler);
 	}
 
 	@Test
@@ -72,9 +72,9 @@ public class RpcServletTest {
 
 	@Test
 	public void testWriteResult_applicationException() throws Exception {
-		TestException e = new TestException().setText("Привет");
-		RpcResult<Void, TestException> result =
-				new RpcResult<Void, TestException>(Descriptors.void0, TestException.DESCRIPTOR)
+		PdefTestException e = new PdefTestException().setText("Привет");
+		RpcResult<Void, PdefTestException> result =
+				new RpcResult<Void, PdefTestException>(Descriptors.void0, PdefTestException.DESCRIPTOR)
 						.setSuccess(false)
 						.setError(e);
 		HttpServletResponse response = mockResponse();

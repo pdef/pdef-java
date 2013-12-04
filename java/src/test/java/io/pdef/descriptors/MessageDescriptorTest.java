@@ -19,8 +19,8 @@ package io.pdef.descriptors;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import io.pdef.test.inheritance.*;
-import io.pdef.test.messages.TestMessage;
-import io.pdef.test.messages.TestComplexMessage;
+import io.pdef.test.messages.PdefTestComplexMessage;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -29,9 +29,9 @@ import java.util.List;
 public class MessageDescriptorTest {
 	@Test
 	public void test() throws Exception {
-		MessageDescriptor<TestMessage> descriptor = TestMessage.DESCRIPTOR;
+		MessageDescriptor<PdefTestMessage> descriptor = PdefTestMessage.DESCRIPTOR;
 
-		assertEquals(TestMessage.class, descriptor.getJavaClass());
+		assertEquals(PdefTestMessage.class, descriptor.getJavaClass());
 		assertNull(descriptor.getBase());
 		assertNull(descriptor.getDiscriminator());
 		assertNull(descriptor.getDiscriminatorValue());
@@ -41,13 +41,13 @@ public class MessageDescriptorTest {
 
 	@Test
 	public void test_nonpolymorphicInheritance() throws Exception {
-		MessageDescriptor<TestMessage> base = TestMessage.DESCRIPTOR;
-		MessageDescriptor<TestComplexMessage> message = TestComplexMessage.DESCRIPTOR;
+		MessageDescriptor<PdefTestMessage> base = PdefTestMessage.DESCRIPTOR;
+		MessageDescriptor<PdefTestComplexMessage> message = PdefTestComplexMessage.DESCRIPTOR;
 
-		assertEquals(TestComplexMessage.class, message.getJavaClass());
+		assertEquals(PdefTestComplexMessage.class, message.getJavaClass());
 		assertEquals(base, message.getBase());
 
-		List<FieldDescriptor<? super TestComplexMessage, ?>> fields = Lists.newArrayList();
+		List<FieldDescriptor<? super PdefTestComplexMessage, ?>> fields = Lists.newArrayList();
 		fields.addAll(base.getFields());
 		fields.addAll(message.getDeclaredFields());
 		assertEquals(fields, message.getFields());
@@ -56,11 +56,11 @@ public class MessageDescriptorTest {
 
 	@Test
 	public void test__polymorphicInheritance() throws Exception {
-		MessageDescriptor<Base> base = Base.DESCRIPTOR;
-		MessageDescriptor<Subtype> subtype = Subtype.DESCRIPTOR;
-		MessageDescriptor<Subtype2> subtype2 = Subtype2.DESCRIPTOR;
-		MessageDescriptor<MultiLevelSubtype> msubtype = MultiLevelSubtype.DESCRIPTOR;
-		FieldDescriptor<? super Base, ?> discriminator = base.getField("type");
+		MessageDescriptor<PdefBase> base = PdefBase.DESCRIPTOR;
+		MessageDescriptor<PdefSubtype> subtype = PdefSubtype.DESCRIPTOR;
+		MessageDescriptor<PdefSubtype2> subtype2 = PdefSubtype2.DESCRIPTOR;
+		MessageDescriptor<PdefMultiLevelSubtype> msubtype = PdefMultiLevelSubtype.DESCRIPTOR;
+		FieldDescriptor<? super PdefBase, ?> discriminator = base.getField("type");
 
 		assertNull(base.getBase());
 		assertEquals(base, subtype.getBase());
@@ -73,9 +73,9 @@ public class MessageDescriptorTest {
 		assertEquals(discriminator, msubtype.getDiscriminator());
 
 		assertNull(base.getDiscriminatorValue());
-		assertEquals(PolymorphicType.SUBTYPE, subtype.getDiscriminatorValue());
-		assertEquals(PolymorphicType.SUBTYPE2, subtype2.getDiscriminatorValue());
-		assertEquals(PolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getDiscriminatorValue());
+		assertEquals(PdefPolymorphicType.SUBTYPE, subtype.getDiscriminatorValue());
+		assertEquals(PdefPolymorphicType.SUBTYPE2, subtype2.getDiscriminatorValue());
+		assertEquals(PdefPolymorphicType.MULTILEVEL_SUBTYPE, msubtype.getDiscriminatorValue());
 
 		assertEquals(ImmutableSet.of(subtype, subtype2, msubtype), base.getSubtypes());
 		assertEquals(ImmutableSet.of(msubtype), subtype.getSubtypes());
@@ -83,9 +83,9 @@ public class MessageDescriptorTest {
 		assertTrue(msubtype.getSubtypes().isEmpty());
 
 		assertNull(base.getSubtype(null));
-		assertEquals(subtype, base.getSubtype(PolymorphicType.SUBTYPE));
-		assertEquals(subtype2, base.getSubtype(PolymorphicType.SUBTYPE2));
-		assertEquals(msubtype, base.getSubtype(PolymorphicType.MULTILEVEL_SUBTYPE));
-		assertEquals(msubtype, subtype.getSubtype(PolymorphicType.MULTILEVEL_SUBTYPE));
+		assertEquals(subtype, base.getSubtype(PdefPolymorphicType.SUBTYPE));
+		assertEquals(subtype2, base.getSubtype(PdefPolymorphicType.SUBTYPE2));
+		assertEquals(msubtype, base.getSubtype(PdefPolymorphicType.MULTILEVEL_SUBTYPE));
+		assertEquals(msubtype, subtype.getSubtype(PdefPolymorphicType.MULTILEVEL_SUBTYPE));
 	}
 }

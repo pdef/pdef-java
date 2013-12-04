@@ -19,8 +19,8 @@ package io.pdef.rpc;
 import com.google.common.collect.ImmutableMap;
 import io.pdef.descriptors.Descriptors;
 import io.pdef.Invocation;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.interfaces.PdefTestInterface;
 import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,7 +30,7 @@ public class RpcClientTest {
 	@Test
 	public void testInvoke() throws Exception {
 		RpcSession session = mock(RpcSession.class);
-		RpcClient<TestInterface> client = new RpcClient<TestInterface>(TestInterface.DESCRIPTOR, session);
+		RpcClient<PdefTestInterface> client = new RpcClient<PdefTestInterface>(PdefTestInterface.DESCRIPTOR, session);
 
 		Invocation invocation = getInvocation(1, 2);
 		client.invoke(invocation);
@@ -38,11 +38,11 @@ public class RpcClientTest {
 		RpcRequest request = new RpcRequest()
 				.setPath("/query")
 				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
-		verify(session).send(request, Descriptors.int32, TestException.DESCRIPTOR);
+		verify(session).send(request, Descriptors.int32, PdefTestException.DESCRIPTOR);
 	}
 
 	private Invocation getInvocation(final int arg0, final int arg1) {
-		return Invocation.root(TestInterface.DESCRIPTOR.getMethod("query"),
+		return Invocation.root(PdefTestInterface.DESCRIPTOR.getMethod("query"),
 				new Object[]{arg0, arg1});
 	}
 }

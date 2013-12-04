@@ -21,13 +21,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.pdef.descriptors.DataTypeDescriptor;
 import io.pdef.descriptors.Descriptors;
-import io.pdef.test.inheritance.Base;
-import io.pdef.test.inheritance.MultiLevelSubtype;
-import io.pdef.test.inheritance.Subtype;
-import io.pdef.test.inheritance.Subtype2;
-import io.pdef.test.messages.TestComplexMessage;
-import io.pdef.test.messages.TestMessage;
-import io.pdef.test.messages.TestEnum;
+import io.pdef.test.inheritance.PdefBase;
+import io.pdef.test.inheritance.PdefMultiLevelSubtype;
+import io.pdef.test.inheritance.PdefSubtype;
+import io.pdef.test.inheritance.PdefSubtype2;
+import io.pdef.test.messages.PdefTestComplexMessage;
+import io.pdef.test.messages.PdefTestEnum;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
@@ -91,13 +91,13 @@ public class JsonFormatTest {
 
 	@Test
 	public void testEnum() throws Exception {
-		test(TestEnum.DESCRIPTOR, TestEnum.THREE, "\"three\"");
-		assertEquals(TestEnum.TWO, format.read("\"tWo\"", TestEnum.DESCRIPTOR));
+		test(PdefTestEnum.DESCRIPTOR, PdefTestEnum.THREE, "\"three\"");
+		assertEquals(PdefTestEnum.TWO, format.read("\"tWo\"", PdefTestEnum.DESCRIPTOR));
 	}
 
 	@Test
 	public void testMessage() throws Exception {
-		test(TestComplexMessage.DESCRIPTOR, createComplexMessage(), MESSAGE_JSON);
+		test(PdefTestComplexMessage.DESCRIPTOR, createComplexMessage(), MESSAGE_JSON);
 	}
 
 	@Test
@@ -107,27 +107,27 @@ public class JsonFormatTest {
 
 	@Test
 	public void testPolymorphicMessage() throws Exception {
-		Base base = new Base().setField("field");
-		Subtype subtype = new Subtype().setField("field").setSubfield("subfield");
-		Subtype2 subtype2 = new Subtype2().setField("field").setSubfield2("subfield2");
-		MultiLevelSubtype msubtype = new MultiLevelSubtype()
+		PdefBase base = new PdefBase().setField("field");
+		PdefSubtype subtype = new PdefSubtype().setField("field").setSubfield("subfield");
+		PdefSubtype2 subtype2 = new PdefSubtype2().setField("field").setSubfield2("subfield2");
+		PdefMultiLevelSubtype msubtype = new PdefMultiLevelSubtype()
 				.setField("field")
 				.setSubfield("subfield")
 				.setMfield("mfield");
 
-		test(Base.DESCRIPTOR, base, "{\"field\":\"field\"}");
-		test(Base.DESCRIPTOR, subtype,
+		test(PdefBase.DESCRIPTOR, base, "{\"field\":\"field\"}");
+		test(PdefBase.DESCRIPTOR, subtype,
 				"{\"type\":\"subtype\",\"field\":\"field\",\"subfield\":\"subfield\"}");
-		test(Base.DESCRIPTOR, subtype2,
+		test(PdefBase.DESCRIPTOR, subtype2,
 				"{\"type\":\"subtype2\",\"field\":\"field\",\"subfield2\":\"subfield2\"}");
-		test(Base.DESCRIPTOR, msubtype,
+		test(PdefBase.DESCRIPTOR, msubtype,
 				"{\"type\":\"multilevel_subtype\",\"field\":\"field\",\"subfield\":\"subfield\","
 						+ "\"mfield\":\"mfield\"}");
 	}
 
-	private TestComplexMessage createComplexMessage() {
-		return new TestComplexMessage()
-				.setEnum0(TestEnum.THREE)
+	private PdefTestComplexMessage createComplexMessage() {
+		return new PdefTestComplexMessage()
+				.setEnum0(PdefTestEnum.THREE)
 				.setBool0(true)
 				.setShort0((short) 16)
 				.setInt0(32)
@@ -138,11 +138,11 @@ public class JsonFormatTest {
 				.setList0(ImmutableList.of(1, 2))
 				.setSet0(ImmutableSet.of(1, 2))
 				.setMap0(ImmutableMap.<Integer, Float>of(1, 1.5f))
-				.setMessage0(new TestMessage()
+				.setMessage0(new PdefTestMessage()
 						.setBool0(true)
 						.setInt0(16)
 						.setString0("hello"))
-				.setPolymorphic(new MultiLevelSubtype()
+				.setPolymorphic(new PdefMultiLevelSubtype()
 						.setField("field")
 						.setSubfield("subfield")
 						.setMfield("mfield"));

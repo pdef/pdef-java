@@ -19,7 +19,7 @@ package io.pdef.rpc;
 import com.google.common.collect.ImmutableMap;
 import io.pdef.descriptors.Descriptors;
 import static io.pdef.rpc.HttpUrlConnectionRpcSession.*;
-import io.pdef.test.interfaces.TestException;
+import io.pdef.test.interfaces.PdefTestException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -81,7 +81,7 @@ public class HttpUrlConnectionRpcSessionTest {
 
 	@Test
 	public void testHandleResponse_readApplicationException() throws Exception {
-		TestException e = new TestException().setText("Привет");
+		PdefTestException e = new PdefTestException().setText("Привет");
 		InputStream input = new ByteArrayInputStream("{\"error\": {\"text\": \"Привет\"}}"
 				.getBytes(UTF8));
 
@@ -90,9 +90,9 @@ public class HttpUrlConnectionRpcSessionTest {
 		when(connection.getErrorStream()).thenReturn(input);
 
 		try {
-			session.handleResponse(connection, Descriptors.void0, TestException.DESCRIPTOR);
+			session.handleResponse(connection, Descriptors.void0, PdefTestException.DESCRIPTOR);
 			fail();
-		} catch (TestException e1) {
+		} catch (PdefTestException e1) {
 			assertEquals(e, e1);
 		}
 	}

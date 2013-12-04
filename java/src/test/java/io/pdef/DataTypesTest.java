@@ -19,7 +19,7 @@ package io.pdef;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -33,9 +33,9 @@ public class DataTypesTest {
 
 	@Test
 	public void testCopy_message() throws Exception {
-		TestMessage message = createMessage();
+		PdefTestMessage message = createMessage();
 
-		TestMessage copy = DataTypes.copy(message);
+		PdefTestMessage copy = DataTypes.copy(message);
 		assertEquals(message, copy);
 		assertNotSame(message, copy);
 	}
@@ -48,11 +48,11 @@ public class DataTypesTest {
 
 	@Test
 	public void testCopy_list() throws Exception {
-		TestMessage message0 = new TestMessage();
-		TestMessage message1 = new TestMessage();
-		List<TestMessage> list = ImmutableList.of(message0, message1);
+		PdefTestMessage message0 = new PdefTestMessage();
+		PdefTestMessage message1 = new PdefTestMessage();
+		List<PdefTestMessage> list = ImmutableList.of(message0, message1);
 
-		List<TestMessage> copy = DataTypes.copy(list);
+		List<PdefTestMessage> copy = DataTypes.copy(list);
 		assertEquals(list, copy);
 		assertNotSame(list, copy);
 		assertNotSame(message0, copy.get(0));
@@ -61,30 +61,30 @@ public class DataTypesTest {
 
 	@Test
 	public void testCopy_set() throws Exception {
-		TestMessage message0 = new TestMessage();
-		TestMessage message1 = new TestMessage();
-		Set<TestMessage> list = ImmutableSet.of(message0, message1);
+		PdefTestMessage message0 = new PdefTestMessage();
+		PdefTestMessage message1 = new PdefTestMessage();
+		Set<PdefTestMessage> list = ImmutableSet.of(message0, message1);
 
-		Set<TestMessage> copy = DataTypes.copy(list);
+		Set<PdefTestMessage> copy = DataTypes.copy(list);
 		assertEquals(list, copy);
 		assertNotSame(list, copy);
 	}
 
 	@Test
 	public void testCopy_map() throws Exception {
-		TestMessage message0 = new TestMessage();
-		TestMessage message1 = new TestMessage();
-		Map<Integer, TestMessage> map = ImmutableMap.of(0, message0, 1, message1);
+		PdefTestMessage message0 = new PdefTestMessage();
+		PdefTestMessage message1 = new PdefTestMessage();
+		Map<Integer, PdefTestMessage> map = ImmutableMap.of(0, message0, 1, message1);
 
-		Map<Integer, TestMessage> copy = DataTypes.copy(map);
+		Map<Integer, PdefTestMessage> copy = DataTypes.copy(map);
 		assertEquals(map, copy);
 		assertNotSame(map, copy);
 		assertNotSame(message0, copy.get(0));
 		assertNotSame(message1, copy.get(1));
 	}
 
-	private TestMessage createMessage() {
-		return new TestMessage()
+	private PdefTestMessage createMessage() {
+		return new PdefTestMessage()
 				.setBool0(random.nextBoolean())
 				.setInt0(random.nextInt())
 				.setString0(String.valueOf(random.nextInt()));

@@ -17,8 +17,8 @@
 package io.pdef;
 
 import io.pdef.descriptors.MethodDescriptor;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.interfaces.PdefTestInterface;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -42,24 +42,24 @@ public class InvocationProxyTest {
 
 	@Test
 	public void testInvoke_handle() throws Throwable {
-		TestInterface iface = createProxy();
+		PdefTestInterface iface = createProxy();
 		when(invoker.invoke(any(Invocation.class))).thenReturn(3);
 
 		Object result = iface.method(1, 2);
 		assertEquals(3, result);
 	}
 
-	@Test(expected = TestException.class)
+	@Test(expected = PdefTestException.class)
 	public void testInvoke_handleExc() throws Exception {
-		TestInterface iface = createProxy();
-		when(invoker.invoke(any(Invocation.class))).thenThrow(new TestException());
+		PdefTestInterface iface = createProxy();
+		when(invoker.invoke(any(Invocation.class))).thenThrow(new PdefTestException());
 
 		iface.exc0();
 	}
 
 	@Test
 	public void testInvoke_capture() throws Exception {
-		TestInterface iface = createProxy();
+		PdefTestInterface iface = createProxy();
 		ArgumentCaptor<Invocation> captor = ArgumentCaptor.forClass(Invocation.class);
 		when(invoker.invoke(any(Invocation.class))).thenReturn(null);
 
@@ -67,7 +67,7 @@ public class InvocationProxyTest {
 		verify(invoker).invoke(captor.capture());
 
 		Invocation invocation = captor.getValue();
-		MethodDescriptor<TestInterface, ?> method = TestInterface.DESCRIPTOR.getMethod(
+		MethodDescriptor<PdefTestInterface, ?> method = PdefTestInterface.DESCRIPTOR.getMethod(
 				"method");
 		assertEquals(method, invocation.getMethod());
 		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
@@ -75,7 +75,7 @@ public class InvocationProxyTest {
 
 	@Test
 	public void testInvoke_captureChain() throws Exception {
-		TestInterface iface = createProxy();
+		PdefTestInterface iface = createProxy();
 		ArgumentCaptor<Invocation> captor = ArgumentCaptor.forClass(Invocation.class);
 		when(invoker.invoke(any(Invocation.class))).thenReturn(null);
 
@@ -91,7 +91,7 @@ public class InvocationProxyTest {
 		assertArrayEquals(new Object[]{3, 4}, invocation1.getArgs());
 	}
 
-	private TestInterface createProxy() {
-		return InvocationProxy.create(TestInterface.DESCRIPTOR, invoker);
+	private PdefTestInterface createProxy() {
+		return InvocationProxy.create(PdefTestInterface.DESCRIPTOR, invoker);
 	}
 }

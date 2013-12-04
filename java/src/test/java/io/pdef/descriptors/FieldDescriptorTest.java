@@ -16,9 +16,9 @@
 
 package io.pdef.descriptors;
 
-import io.pdef.test.inheritance.Base;
-import io.pdef.test.inheritance.PolymorphicType;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.inheritance.PdefBase;
+import io.pdef.test.inheritance.PdefPolymorphicType;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,8 +27,8 @@ import org.junit.Test;
 public class FieldDescriptorTest {
 	@Test
 	public void test() throws Exception {
-		FieldDescriptor<?, ?> bool0 = TestMessage.DESCRIPTOR.getField("bool0");
-		FieldDescriptor<?, ?> string0 = TestMessage.DESCRIPTOR.getField("string0");
+		FieldDescriptor<?, ?> bool0 = PdefTestMessage.DESCRIPTOR.getField("bool0");
+		FieldDescriptor<?, ?> string0 = PdefTestMessage.DESCRIPTOR.getField("string0");
 
 		assertEquals("bool0", bool0.getName());
 		assertEquals(Descriptors.bool, bool0.getType());
@@ -41,17 +41,17 @@ public class FieldDescriptorTest {
 
 	@Test
 	public void testDiscriminator() throws Exception {
-		FieldDescriptor<?, ?> field = Base.DESCRIPTOR.getField("type");
+		FieldDescriptor<?, ?> field = PdefBase.DESCRIPTOR.getField("type");
 
 		assertEquals("type", field.getName());
-		assertEquals(PolymorphicType.DESCRIPTOR, field.getType());
+		assertEquals(PdefPolymorphicType.DESCRIPTOR, field.getType());
 		assertTrue(field.isDiscriminator());
 	}
 
 	@Test
 	public void testGetSet() throws Exception {
-		TestMessage msg = new TestMessage();
-		FieldDescriptor<? super TestMessage, String> field = stringField();
+		PdefTestMessage msg = new PdefTestMessage();
+		FieldDescriptor<? super PdefTestMessage, String> field = stringField();
 
 		field.set(msg, "Hello, world");
 		String s = field.get(msg);
@@ -60,8 +60,8 @@ public class FieldDescriptorTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private FieldDescriptor<? super TestMessage, String> stringField() {
-		return (FieldDescriptor<? super TestMessage, String>)
-				TestMessage.DESCRIPTOR.getField("string0");
+	private FieldDescriptor<? super PdefTestMessage, String> stringField() {
+		return (FieldDescriptor<? super PdefTestMessage, String>)
+				PdefTestMessage.DESCRIPTOR.getField("string0");
 	}
 }

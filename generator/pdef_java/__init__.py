@@ -37,11 +37,11 @@ INTERFACE_TEMPLATE = 'interface.jinja2'
 
 
 class JavaGenerator(Generator):
-    '''Java code generator, supports module names, does not support prefixes.'''
-    def __init__(self, out, module_names=None, **kwargs):
-        super(JavaGenerator, self).__init__(out, module_names=module_names)
+    '''Java code generator, supports module names and prefixes.'''
+    def __init__(self, out, module_names=None, prefixes=None, **kwargs):
+        super(JavaGenerator, self).__init__(out, module_names=module_names, prefixes=prefixes)
 
-        self.filters = _JavaFilters(self.module_mapper)
+        self.filters = _JavaFilters(self.module_mapper, self.prefix_mapper)
         self.templates = Templates(__file__, filters=self.filters)
 
     def generate(self, package):
@@ -81,15 +81,20 @@ class JavaGenerator(Generator):
 
     def _file_path(self, def0):
         dirname = self._package_path(def0)
-        filename = '%s.java' % def0.name
+        filename = '%s.java' % self.filters.jname(def0)
         return os.path.join(dirname, filename)
 
 
 class _JavaFilters(object):
     '''Java filters for Jinja templates.'''
-    def __init__(self, module_mapper, prefix=None):
+    def __init__(self, module_mapper, prefix_mapper):
         self.module_mapper = module_mapper
-        self.prefix = prefix
+        self.prefix_mapper = prefix_mapper
+
+    def jname(self, def0):
+        abs_name = '%s.%s' % (def0.module.name if def0.module else '', def0.name)
+        prefix = self.prefix_mapper.get_prefix(abs_name)
+        return prefix + def0.name if prefix else def0.name
 
     def jpackage(self, module):
         return self.module_mapper(module.name)
@@ -178,7 +183,7 @@ class _JavaFilters(object):
 
     def _jdefinition(self, type0):
         package = self.jpackage(type0.module)
-        absolute_name = '%s.%s' % (package, type0.name)
+        absolute_name = '%s.%s' % (package, self.jname(type0))
         descriptor = '%s.DESCRIPTOR' % absolute_name
         default = ('new %s()' % absolute_name) if type0.is_message else 'null'
         return _JavaRef(absolute_name, descriptor, default=default)

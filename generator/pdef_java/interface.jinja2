@@ -6,9 +6,9 @@ package {{ interface.module|jpackage }};
 /** {{ interface.doc }} */
 {% endif %}
 {% if not interface.base -%}
-    public interface {{ interface.name }} {
+    public interface {{ interface|jname }} {
 {% else -%}
-    public interface {{ interface.name }} extends {{ interface.base|jref }} {
+    public interface {{ interface|jname }} extends {{ interface.base|jref }} {
 {% endif %}
 
 {% for method in interface.declared_methods %}
@@ -22,15 +22,15 @@ package {{ interface.module|jpackage }};
         {%- endfor %});
 
 {% endfor %}
-    static io.pdef.descriptors.InterfaceDescriptor<{{ interface.name }}> DESCRIPTOR = io.pdef.descriptors.InterfaceDescriptor.<{{ interface.name }}>builder()
-            .setJavaClass({{ interface.name }}.class)
+    static io.pdef.descriptors.InterfaceDescriptor<{{ interface|jname }}> DESCRIPTOR = io.pdef.descriptors.InterfaceDescriptor.<{{ interface|jname }}>builder()
+            .setJavaClass({{ interface|jname }}.class)
         {% if interface.exc %}
             .setExc({{ interface.exc|jdescriptor }})
         {% endif %}
         {% for method in interface.declared_methods %}
-            .addMethod(io.pdef.descriptors.MethodDescriptor.<{{ interface.name }}, {{ method.result|jref }}>builder()
+            .addMethod(io.pdef.descriptors.MethodDescriptor.<{{ interface|jname }}, {{ method.result|jref }}>builder()
                     .setName("{{ method.name }}")
-                    .setReflexiveInvoker({{ interface.name }}.class)
+                    .setReflexiveInvoker({{ interface|jname }}.class)
                 {% if method.result.is_interface %}
                     .setInterfaceResult({{ method.result|jref }}.class)
                 {% else %}

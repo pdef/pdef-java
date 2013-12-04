@@ -16,10 +16,10 @@
 
 package io.pdef;
 
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
-import io.pdef.test.messages.TestEnum;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.messages.PdefTestEnum;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -41,14 +41,14 @@ public class TypeEnumTest {
 		assertEquals(TypeEnum.SET, TypeEnum.dataTypeOf(HashSet.class));
 		assertEquals(TypeEnum.MAP, TypeEnum.dataTypeOf(HashMap.class));
 		assertEquals(TypeEnum.VOID, TypeEnum.dataTypeOf(Void.class));
-		assertEquals(TypeEnum.ENUM, TypeEnum.dataTypeOf(TestEnum.class));
-		assertEquals(TypeEnum.MESSAGE, TypeEnum.dataTypeOf(TestMessage.class));
-		assertEquals(TypeEnum.MESSAGE, TypeEnum.dataTypeOf(TestException.class));
+		assertEquals(TypeEnum.ENUM, TypeEnum.dataTypeOf(PdefTestEnum.class));
+		assertEquals(TypeEnum.MESSAGE, TypeEnum.dataTypeOf(PdefTestMessage.class));
+		assertEquals(TypeEnum.MESSAGE, TypeEnum.dataTypeOf(PdefTestException.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testDataTypeOf_unsupported() throws Exception {
-		TypeEnum.dataTypeOf(TestInterface.class);
+		TypeEnum.dataTypeOf(PdefTestInterface.class);
 	}
 
 	@Test(expected = NullPointerException.class)

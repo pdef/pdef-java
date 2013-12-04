@@ -17,8 +17,8 @@
 package io.pdef.rpc;
 
 import io.pdef.descriptors.Descriptors;
-import io.pdef.test.interfaces.TestException;
-import io.pdef.test.interfaces.TestInterface;
+import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.interfaces.PdefTestException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RpcHandlerTest {
-	TestInterface service;
-	RpcHandler<TestInterface> handler;
+	PdefTestInterface service;
+	RpcHandler<PdefTestInterface> handler;
 
 	@Before
 	public void setUp() throws Exception {
-		service = mock(TestInterface.class);
-		handler = new RpcHandler<TestInterface>(TestInterface.DESCRIPTOR, service);
+		service = mock(PdefTestInterface.class);
+		handler = new RpcHandler<PdefTestInterface>(PdefTestInterface.DESCRIPTOR, service);
 	}
 
 	@Test(expected = RpcException.class)
@@ -54,14 +54,14 @@ public class RpcHandlerTest {
 
 	@Test
 	public void testHandle_applicationException() throws Exception {
-		TestException e = new TestException().setText("Hello, world");
+		PdefTestException e = new PdefTestException().setText("Hello, world");
 		when(service.method(1, 2)).thenThrow(e);
 		RpcRequest request = getRequest();
 
 		RpcResult<?, ?> result = handler.handle(request);
 		assertFalse(result.isSuccess());
 		assertEquals(e, result.getError());
-		assertEquals(TestException.DESCRIPTOR, result.getErrorDescriptor());
+		assertEquals(PdefTestException.DESCRIPTOR, result.getErrorDescriptor());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

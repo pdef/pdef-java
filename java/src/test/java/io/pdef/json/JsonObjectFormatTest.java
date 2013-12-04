@@ -21,10 +21,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.pdef.descriptors.*;
-import io.pdef.test.inheritance.Base;
-import io.pdef.test.inheritance.MultiLevelSubtype;
-import io.pdef.test.messages.TestEnum;
-import io.pdef.test.messages.TestMessage;
+import io.pdef.test.inheritance.PdefBase;
+import io.pdef.test.inheritance.PdefMultiLevelSubtype;
+import io.pdef.test.messages.PdefTestEnum;
+import io.pdef.test.messages.PdefTestMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
@@ -90,10 +90,10 @@ public class JsonObjectFormatTest {
 
 	@Test
 	public void testEnum() throws Exception {
-		EnumDescriptor<TestEnum> descriptor = TestEnum.DESCRIPTOR;
+		EnumDescriptor<PdefTestEnum> descriptor = PdefTestEnum.DESCRIPTOR;
 
-		testValue(descriptor, TestEnum.TWO, "two");
-		assertEquals(TestEnum.TWO, format.read("two", descriptor));
+		testValue(descriptor, PdefTestEnum.TWO, "two");
+		assertEquals(PdefTestEnum.TWO, format.read("two", descriptor));
 	}
 
 	private <T> void testValue(final DataTypeDescriptor<T> descriptor, final T object,
@@ -109,10 +109,10 @@ public class JsonObjectFormatTest {
 		List<Map<String, Object>> serialized = Lists.newArrayList();
 		serialized.add(fixtureMap());
 
-		List<TestMessage> parsed = Lists.newArrayList();
+		List<PdefTestMessage> parsed = Lists.newArrayList();
 		parsed.add(fixtureMessage());
 
-		ListDescriptor<TestMessage> descriptor = Descriptors.list(TestMessage.DESCRIPTOR);
+		ListDescriptor<PdefTestMessage> descriptor = Descriptors.list(PdefTestMessage.DESCRIPTOR);
 		testValue(descriptor, parsed, serialized);
 	}
 
@@ -121,23 +121,23 @@ public class JsonObjectFormatTest {
 		Set<Map<String, Object>> serialized = Sets.newHashSet();
 		serialized.add(fixtureMap());
 
-		Set<TestMessage> parsed = Sets.newHashSet();
+		Set<PdefTestMessage> parsed = Sets.newHashSet();
 		parsed.add(fixtureMessage());
 
-		SetDescriptor<TestMessage> descriptor = Descriptors.set(TestMessage.DESCRIPTOR);
+		SetDescriptor<PdefTestMessage> descriptor = Descriptors.set(PdefTestMessage.DESCRIPTOR);
 		testValue(descriptor, parsed, serialized);
 	}
 
 	@Test
 	public void testMap() throws Exception {
-		Map<Integer, TestMessage> object = Maps.newHashMap();
+		Map<Integer, PdefTestMessage> object = Maps.newHashMap();
 		object.put(123, fixtureMessage());
 
 		Map<String, Map<String, Object>> serialized = Maps.newHashMap();
 		serialized.put("123", fixtureMap());
 
-		MapDescriptor <Integer, TestMessage> descriptor = Descriptors
-				.map(Descriptors.int32, TestMessage.DESCRIPTOR);
+		MapDescriptor <Integer, PdefTestMessage> descriptor = Descriptors
+				.map(Descriptors.int32, PdefTestMessage.DESCRIPTOR);
 
 		testValue(descriptor, object, serialized);
 	}
@@ -145,14 +145,14 @@ public class JsonObjectFormatTest {
 	@Test
 	public void testMessage() throws Exception {
 		Map<String, Object> serialized = fixtureMap();
-		TestMessage parsed = fixtureMessage();
+		PdefTestMessage parsed = fixtureMessage();
 
-		testValue(TestMessage.DESCRIPTOR, parsed, serialized);
+		testValue(PdefTestMessage.DESCRIPTOR, parsed, serialized);
 	}
 
 	@Test
 	public void testPolymorphicMessage() throws Exception {
-		MultiLevelSubtype parsed = new MultiLevelSubtype()
+		PdefMultiLevelSubtype parsed = new PdefMultiLevelSubtype()
 				.setField("field")
 				.setSubfield("subfield")
 				.setMfield("multi-level-field");
@@ -162,11 +162,11 @@ public class JsonObjectFormatTest {
 				"subfield", "subfield",
 				"mfield", "multi-level-field");
 
-		testValue(Base.DESCRIPTOR, parsed, serialized);
+		testValue(PdefBase.DESCRIPTOR, parsed, serialized);
 	}
 
-	private TestMessage fixtureMessage() {
-		return new TestMessage()
+	private PdefTestMessage fixtureMessage() {
+		return new PdefTestMessage()
 				.setBool0(true)
 				.setInt0(123)
 				.setString0("hello");
