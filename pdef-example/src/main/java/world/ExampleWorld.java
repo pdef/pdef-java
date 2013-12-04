@@ -20,12 +20,10 @@ class ExampleWorld implements World {
 	}
 
 	@Override
-	public Void switchDayNight() {
-		return null;
-	}
+	public void switchDayNight() {}
 
 	@Override
-	public List<Event> events(final Integer limit, final Long offset) {
+	public List<Event> events(final int limit, final long offset) {
 		return ImmutableList.of();
 	}
 }

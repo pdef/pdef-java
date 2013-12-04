@@ -20,7 +20,7 @@ import java.util.*;
 
 /** TypeEnum enumerates Pdef types. */
 public enum TypeEnum {
-	// Primitives.
+	// Values.
 	BOOL, INT16, INT32, INT64, FLOAT, DOUBLE, STRING, DATETIME,
 
 	// Collections.
@@ -34,8 +34,11 @@ public enum TypeEnum {
 	MESSAGE,
 	INTERFACE;
 
+	private static final EnumSet<TypeEnum> PRIMITIVES;  // Java primitives.
 	private static final Map<Class<?>, TypeEnum> VALUES;
 	static {
+		PRIMITIVES = EnumSet.of(BOOL, INT16, INT32, INT64, FLOAT, DOUBLE);
+
 		VALUES = new HashMap<Class<?>, TypeEnum>();
 		VALUES.put(Boolean.class, BOOL);
 		VALUES.put(Short.class, INT16);
@@ -62,5 +65,9 @@ public enum TypeEnum {
 
 	public boolean isDataType() {
 		return this != INTERFACE;
+	}
+
+	public boolean isPrimitive() {
+		return PRIMITIVES.contains(this);
 	}
 }

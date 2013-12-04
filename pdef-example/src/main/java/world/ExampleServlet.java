@@ -12,13 +12,12 @@ import java.io.IOException;
 
 public class ExampleServlet extends HttpServlet {
 	private transient RpcServlet<World> delegate;
-	private World world;
 
 	@Override
 	public void init(final ServletConfig config) throws ServletException {
 		super.init(config);
 
-		world = new ExampleWorld();
+		World world = new ExampleWorld();
 		RpcHandler<World> handler = new RpcHandler<World>(World.DESCRIPTOR, world);
 		delegate = new RpcServlet<World>(handler);
 	}

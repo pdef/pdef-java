@@ -18,6 +18,7 @@ package io.pdef.descriptors;
 
 import io.pdef.TypeEnum;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class SetDescriptor<T> extends DataTypeDescriptor<Set<T>> {
@@ -34,5 +35,10 @@ public class SetDescriptor<T> extends DataTypeDescriptor<Set<T>> {
 	/** Returns a set element descriptor. */
 	public DataTypeDescriptor<T> getElement() {
 		return element;
+	}
+
+	@Override
+	public Set<T> getDefault() {
+		return new HashSet<T>();
 	}
 }

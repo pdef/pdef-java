@@ -18,6 +18,7 @@ package io.pdef.descriptors;
 
 import io.pdef.TypeEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListDescriptor<T> extends DataTypeDescriptor<List<T>> {
@@ -34,5 +35,10 @@ public class ListDescriptor<T> extends DataTypeDescriptor<List<T>> {
 	/** Returns a list element descriptor. */
 	public DataTypeDescriptor<T> getElement() {
 		return element;
+	}
+
+	@Override
+	public List<T> getDefault() {
+		return new ArrayList<T>();
 	}
 }

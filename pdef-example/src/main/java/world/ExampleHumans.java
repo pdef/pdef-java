@@ -14,30 +14,25 @@ class ExampleHumans implements Humans {
 	private final List<Human> list = Lists.newArrayList();
 
 	@Override
-	public synchronized Human find(final Long id) {
+	public synchronized Human find(final long id) {
 		Human human = map.get(id);
 		return human == null ? null : human.copy();
 	}
 
 	@Override
-	public synchronized List<Human> all(Integer limit, Integer offset) {
-		limit = limit == null ? 0 : limit;
-		offset = offset == null ? 0 : offset;
-		
+	public synchronized List<Human> all(int limit, int offset) {
 		if (limit < 0 || offset < 0) {
 			return ImmutableList.of();
 		}
 
-		int fromIndex = offset;
-		int toIndex = fromIndex + limit;
-
-		if (fromIndex > list.size()) {
+		int toIndex = offset + limit;
+		if (offset > list.size()) {
 			return ImmutableList.of();
 		}
 		toIndex = toIndex <= list.size() ? toIndex : list.size();
 
 		List<Human> result = Lists.newArrayList();
-		for (Human human : list.subList(fromIndex, toIndex)) {
+		for (Human human : list.subList(offset, toIndex)) {
 			result.add(human.copy());
 		}
 		return result;

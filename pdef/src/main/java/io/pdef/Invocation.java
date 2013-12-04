@@ -16,6 +16,8 @@
 
 package io.pdef;
 
+import io.pdef.descriptors.ArgumentDescriptor;
+import io.pdef.descriptors.DataTypeDescriptor;
 import io.pdef.descriptors.MethodDescriptor;
 
 import javax.annotation.Nonnull;
@@ -38,7 +40,7 @@ public class Invocation {
 		if (method == null) throw new NullPointerException("method");
 		this.method = method;
 		this.parent = parent;
-		this.args = copyArgs(args, method);
+		this.args = buildArgs(args, method);
 	}
 
 	@Override
@@ -81,11 +83,12 @@ public class Invocation {
 	}
 
 	@Nonnull
-	private static Object[] copyArgs(@Nullable final Object[] args,
+	private static Object[] buildArgs(@Nullable final Object[] args,
 			final MethodDescriptor<?, ?> method) {
-		int length = args == null ? 0 : args.length;
-		int size = method.getArgs().size();
+		List<ArgumentDescriptor<?>> argds = method.getArgs();
 
+		int length = args == null ? 0 : args.length;
+		int size = argds.size();
 		if (length != size) {
 			String msg = String.format("Wrong number of arguments for %s, %d expected, %d got",
 					method, size, length);
@@ -94,7 +97,15 @@ public class Invocation {
 
 		Object[] copy = new Object[length];
 		for (int i = 0; i < length; i++) {
-			copy[i] = DataTypes.copy(args[i]);
+			Object arg = args[i];
+			DataTypeDescriptor<?> type = argds.get(i).getType();
+
+			if (arg == null && type.getType().isPrimitive()) {
+				// Replace null primitives with the default values.
+				copy[i] = type.getDefault();
+			} else {
+				copy[i] = DataTypes.copy(args[i]);
+			}
 		}
 
 		return copy;

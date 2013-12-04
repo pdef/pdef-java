@@ -15,9 +15,9 @@ package {{ interface.module|jpackage }};
     {% if method.doc %}
     /** {{ method.doc|indent(4) }} */
     {% endif %}
-    {{ method.result|jref }} {{ method.name }}(
+    {{ method.result|jref_unboxed }} {{ method.name }}(
         {%- for arg in method.args -%}
-                {{ arg.type|jref }} {{ arg.name }}
+                {{ arg.type|jref_unboxed }} {{ arg.name }}
                 {%- if loop.length > 1 and not loop.last %}, {% endif %}
         {%- endfor %});
 

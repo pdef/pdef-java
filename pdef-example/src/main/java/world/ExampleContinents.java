@@ -15,7 +15,5 @@ class ExampleContinents implements Continents {
 	}
 
 	@Override
-	public Void move(final ContinentName name, final Location to) {
-		return null;
-	}
+	public void move(final ContinentName name, final Location to) {}
 }

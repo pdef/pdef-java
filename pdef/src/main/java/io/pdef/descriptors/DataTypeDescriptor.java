@@ -18,7 +18,7 @@ package io.pdef.descriptors;
 
 import io.pdef.TypeEnum;
 
-public class DataTypeDescriptor<T> extends Descriptor<T> {
+public abstract class DataTypeDescriptor<T> extends Descriptor<T> {
 	protected DataTypeDescriptor(final TypeEnum type, final Class<T> javaClass) {
 		super(type, javaClass);
 
@@ -26,4 +26,7 @@ public class DataTypeDescriptor<T> extends Descriptor<T> {
 			throw new IllegalArgumentException("Type must be a data type, not " + type);
 		}
 	}
+
+	/** Returns the default value. */
+	public abstract T getDefault();
 }

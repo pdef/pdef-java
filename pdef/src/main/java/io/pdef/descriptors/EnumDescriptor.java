@@ -57,6 +57,11 @@ public class EnumDescriptor<T extends Enum<T>> extends DataTypeDescriptor<T> {
 		return namesToValues.get(uppercased);
 	}
 
+	@Override
+	public T getDefault() {
+		return null;
+	}
+
 	private static <T extends Enum<T>> Map<String, T> valuesToMap(final List<T> values) {
 		Map<String, T> temp = new LinkedHashMap<String, T>();
 		for (T value : values) {

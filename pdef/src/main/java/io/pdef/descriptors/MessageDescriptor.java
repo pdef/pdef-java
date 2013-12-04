@@ -139,6 +139,11 @@ public class MessageDescriptor<M extends Message> extends DataTypeDescriptor<M> 
 		return "MessageDescriptor{" + getJavaClass().getSimpleName() + '}';
 	}
 
+	@Override
+	public M getDefault() {
+		return newInstance();
+	}
+
 	public static class Builder<M extends Message> {
 		private Class<M> javaClass;
 		private Provider<M> provider;

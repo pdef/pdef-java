@@ -58,10 +58,19 @@ public class InvocationProxyTest {
 	}
 
 	@Test
+	public void testInvoke_handleNullPrimitiveResultToDefault() throws Exception {
+		PdefTestInterface iface = createProxy();
+		when(invoker.invoke(any(Invocation.class))).thenReturn(null);
+
+		int result = iface.method(1, 2);
+		assertEquals(0, result);
+	}
+
+	@Test
 	public void testInvoke_capture() throws Exception {
 		PdefTestInterface iface = createProxy();
 		ArgumentCaptor<Invocation> captor = ArgumentCaptor.forClass(Invocation.class);
-		when(invoker.invoke(any(Invocation.class))).thenReturn(null);
+		when(invoker.invoke(any(Invocation.class))).thenReturn(1);
 
 		iface.method(1, 2);
 		verify(invoker).invoke(captor.capture());

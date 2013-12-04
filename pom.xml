@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>pdef</module>
+		<module>pdef-example</module>
 		<module>pdef-servlet</module>
 	</modules>
 

@@ -20,20 +20,19 @@ import io.pdef.TypeEnum;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /** Primitive and collection descriptors. */
 public class Descriptors {
-	public static DataTypeDescriptor<Boolean> bool = primitive(TypeEnum.BOOL, Boolean.class);
-	public static DataTypeDescriptor<Short> int16 = primitive(TypeEnum.INT16, Short.class);
-	public static DataTypeDescriptor<Integer> int32 = primitive(TypeEnum.INT32, Integer.class);
-	public static DataTypeDescriptor<Long> int64 = primitive(TypeEnum.INT64, Long.class);
-	public static DataTypeDescriptor<Float> float0 = primitive(TypeEnum.FLOAT, Float.class);
-	public static DataTypeDescriptor<Double> double0 = primitive(TypeEnum.DOUBLE, Double.class);
-	public static DataTypeDescriptor<String> string = primitive(TypeEnum.STRING, String.class);
-	public static DataTypeDescriptor<Date> datetime = primitive(TypeEnum.DATETIME, Date.class);
-	public static DataTypeDescriptor<Void> void0 = primitive(TypeEnum.VOID, Void.class);
+	public static DataTypeDescriptor<Boolean> bool = primitive(TypeEnum.BOOL, Boolean.class, false);
+	public static DataTypeDescriptor<Short> int16 = primitive(TypeEnum.INT16, Short.class, (short) 0);
+	public static DataTypeDescriptor<Integer> int32 = primitive(TypeEnum.INT32, Integer.class, 0);
+	public static DataTypeDescriptor<Long> int64 = primitive(TypeEnum.INT64, Long.class, 0L);
+	public static DataTypeDescriptor<Float> float0 = primitive(TypeEnum.FLOAT, Float.class, 0f);
+	public static DataTypeDescriptor<Double> double0 = primitive(TypeEnum.DOUBLE, Double.class, 0d);
+	public static DataTypeDescriptor<String> string = primitive(TypeEnum.STRING, String.class, "");
+	public static DataTypeDescriptor<Date> datetime = primitive(TypeEnum.DATETIME, Date.class, null);
+	public static DataTypeDescriptor<Void> void0 = primitive(TypeEnum.VOID, Void.class, null);
 
 	private Descriptors() {}
 
@@ -50,8 +49,9 @@ public class Descriptors {
 		return new MapDescriptor<K, V>(key, value);
 	}
 
-	private static <T> PrimitiveDescriptor<T> primitive(final TypeEnum type, final Class<T> cls) {
-		return new PrimitiveDescriptor<T>(type, cls);
+	private static <T> PrimitiveDescriptor<T> primitive(final TypeEnum type, final Class<T> cls,
+			final T defaultValue) {
+		return new PrimitiveDescriptor<T>(type, cls, defaultValue);
 	}
 
 	/** Returns an interface descriptor or throws an IllegalArgumentException. */
@@ -83,8 +83,17 @@ public class Descriptors {
 	}
 
 	private static class PrimitiveDescriptor<T> extends DataTypeDescriptor<T> {
-		private PrimitiveDescriptor(final TypeEnum type, final Class<T> javaClass) {
+		private final T defaultValue;
+
+		private PrimitiveDescriptor(final TypeEnum type, final Class<T> javaClass,
+				final T defaultValue) {
 			super(type, javaClass);
+			this.defaultValue = defaultValue;
+		}
+
+		@Override
+		public T getDefault() {
+			return defaultValue;
 		}
 	}
 }

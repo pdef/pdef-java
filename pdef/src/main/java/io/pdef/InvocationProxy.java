@@ -16,6 +16,7 @@
 
 package io.pdef;
 
+import io.pdef.descriptors.DataTypeDescriptor;
 import io.pdef.descriptors.InterfaceDescriptor;
 import io.pdef.descriptors.MethodDescriptor;
 
@@ -66,7 +67,13 @@ public class InvocationProxy<T> implements InvocationHandler {
 
 		Invocation invocation = capture(md, args);
 		if (md.isTerminal()) {
-			return handle(invocation);
+			Object result = handle(invocation);
+			DataTypeDescriptor<?> resultd = (DataTypeDescriptor<?>) md.getResult();
+			if (result == null && resultd.getType().isPrimitive()) {
+				// Replace null primitive result with the default value.
+				result = resultd.getDefault();
+			}
+			return result;
 		} else {
 			return nextProxy(invocation);
 		}

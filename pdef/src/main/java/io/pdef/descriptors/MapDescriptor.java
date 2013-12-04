@@ -18,6 +18,7 @@ package io.pdef.descriptors;
 
 import io.pdef.TypeEnum;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapDescriptor<K, V> extends DataTypeDescriptor<Map<K, V>> {
@@ -42,5 +43,10 @@ public class MapDescriptor<K, V> extends DataTypeDescriptor<Map<K, V>> {
 	/** Returns a map value descriptor. */
 	public DataTypeDescriptor<V> getValue() {
 		return value;
+	}
+
+	@Override
+	public Map<K, V> getDefault() {
+		return new HashMap<K, V>();
 	}
 }
