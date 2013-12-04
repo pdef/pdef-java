@@ -37,23 +37,8 @@ Installation
       - java: Java code generator, supports namespaces.
     ```
     
-- Java package:
-    ```xml
-    <dependency>
-        <groupId>io.pdef</groupId>
-        <artifactId>pdef</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-    ```
-
-    RPC servlet:
-    ```xml
-    <dependency>
-        <groupId>io.pdef</groupId>
-        <artifactId>pdef-servlet</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-    ```
+- Java package (maven):
+    In progress...
 
 Code generation
 ---------------
