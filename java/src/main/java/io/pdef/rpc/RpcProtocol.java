@@ -115,7 +115,7 @@ public class RpcProtocol {
 			// Find a method by a name.
 			MethodDescriptor<?, ?> method = descriptor.getMethod(part);
 			if (method == null) {
-				throw RpcException.methodNotFound("Method is not found: " + part);
+				throw RpcException.badRequest("Method is not found: " + part);
 			}
 
 			// Check the required HTTP method.
@@ -141,15 +141,15 @@ public class RpcProtocol {
 
 		if (!parts.isEmpty()) {
 			// No more interface descriptors in a chain, but the parts are still present.
-			throw RpcException.methodNotFound("Failed to parse an invocation chain");
+			throw RpcException.badRequest("Failed to parse an invocation chain");
 		}
 
 		if (invocation == null) {
-			throw RpcException.methodNotFound("Methods required");
+			throw RpcException.badRequest("Methods required");
 		}
 
 		if (!invocation.getMethod().isTerminal()) {
-			throw RpcException.methodNotFound("The last method must be a terminal one. "
+			throw RpcException.badRequest("The last method must be a terminal one. "
 					+ "It must return a data type or be void.");
 		}
 
@@ -170,7 +170,7 @@ public class RpcProtocol {
 			} else if (argd.isQuery()) {
 				value = query.get(name);
 			} else if (parts.isEmpty()) {
-				throw RpcException.methodNotFound("Wrong number of method args");
+				throw RpcException.badRequest("Wrong number of method args");
 			} else {
 				value = urldecode(parts.removeFirst());
 			}

@@ -43,7 +43,7 @@ public class RpcException extends RuntimeException {
 		return new RpcException(HttpURLConnection.HTTP_BAD_METHOD, s);
 	}
 
-	public static RpcException methodNotFound(final String s) {
-		return new RpcException(HttpURLConnection.HTTP_NOT_FOUND, s);
+	public static RpcException badRequest(final String s) {
+		return new RpcException(HttpURLConnection.HTTP_BAD_REQUEST, s);
 	}
 }

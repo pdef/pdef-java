@@ -86,11 +86,11 @@ public class RpcServletTest {
 
 	@Test
 	public void testWriteRpcException() throws Exception {
-		RpcException exception = RpcException.methodNotFound("Method not found");
+		RpcException exception = RpcException.badRequest("Method not found");
 		HttpServletResponse response = mockResponse();
 		servlet.writeRpcException(exception, response);
 
-		verify(response).setStatus(HttpURLConnection.HTTP_NOT_FOUND);
+		verify(response).setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
 		verify(response).setContentType(RpcServlet.TEXT_CONTENT_TYPE);
 	}
 
