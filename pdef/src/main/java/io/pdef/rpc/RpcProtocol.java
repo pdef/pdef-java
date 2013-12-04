@@ -62,7 +62,7 @@ public class RpcProtocol {
 		Object[] args = invocation.getArgs();
 		List<ArgumentDescriptor<?>> argds = method.getArgs();
 
-		StringBuilder path = new StringBuilder(request.getPath())
+		StringBuilder path = new StringBuilder(request.getRelativePath())
 				.append("/")
 				.append(method.getName());
 
@@ -85,7 +85,7 @@ public class RpcProtocol {
 			}
 		}
 
-		request.setPath(path.toString());
+		request.setRelativePath(path.toString());
 	}
 
 	// VisibleForTesting
@@ -107,7 +107,7 @@ public class RpcProtocol {
 		if (descriptor == null) throw new NullPointerException("descriptor");
 
 		Invocation invocation = null;
-		LinkedList<String> parts = splitPath(request.getPath());
+		LinkedList<String> parts = splitPath(request.getRelativePath());
 
 		while (!parts.isEmpty()) {
 			String part = parts.removeFirst();
@@ -145,7 +145,7 @@ public class RpcProtocol {
 		}
 
 		if (invocation == null) {
-			throw RpcException.badRequest("Methods required");
+			throw RpcException.badRequest("Invocation chain required");
 		}
 
 		if (!invocation.getMethod().isTerminal()) {
@@ -185,6 +185,9 @@ public class RpcProtocol {
 	private LinkedList<String> splitPath(String path) {
 		if (path.startsWith("/")) {
 			path = path.substring(1);
+		}
+		if (path.isEmpty()) {
+			return new LinkedList<String>();
 		}
 
 		// The split() method discards trailing empty strings (i.e. the last slash).

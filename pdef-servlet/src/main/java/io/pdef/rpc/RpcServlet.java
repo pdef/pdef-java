@@ -59,12 +59,7 @@ public final class RpcServlet<T> extends HttpServlet {
 	// VisibleForTesting
 	RpcRequest getRpcRequest(final HttpServletRequest request) {
 		String method = request.getMethod();
-
-		String path = nullToEmpty(request.getRequestURI());
-		String context = nullToEmpty(request.getContextPath());
-		if (path.startsWith(context)) {
-			path = path.substring(context.length());
-		}
+		String relativePath = getRelativePath(request);
 
 		// In servlets we cannot distinguish between query and post params,
 		// so we use the same map for both. It is safe because Pdef HTTP RPC
@@ -73,7 +68,7 @@ public final class RpcServlet<T> extends HttpServlet {
 
 		return new RpcRequest()
 				.setMethod(method)
-				.setPath(path)
+				.setRelativePath(relativePath)
 				.setQuery(params)
 				.setPost(params);
 	}
@@ -104,7 +99,27 @@ public final class RpcServlet<T> extends HttpServlet {
 		resp.getWriter().write(message);
 	}
 
-	private Map<String, String> getParams(final HttpServletRequest request) {
+	String getRelativePath(final HttpServletRequest request) {
+		String pathInfo = request.getPathInfo();
+		String contextPath = request.getContextPath();
+		String servletPath = request.getServletPath();
+		String basePath = pathInfo != null ? contextPath + servletPath + "/"
+		                                   : contextPath + "/";
+
+		String relativePath = request.getRequestURI();
+		if (basePath.length() > relativePath.length()) {
+			relativePath = "";
+		} else {
+			relativePath = relativePath.substring(basePath.length());
+		}
+
+		if (relativePath.isEmpty()) {
+			relativePath = "/";
+		}
+		return relativePath.charAt(0) == '/' ? relativePath : '/' + relativePath;
+	}
+
+	Map<String, String> getParams(final HttpServletRequest request) {
 		Map<String, String> params = new HashMap<String, String>();
 
 		Map<String, String[]> map = request.getParameterMap();

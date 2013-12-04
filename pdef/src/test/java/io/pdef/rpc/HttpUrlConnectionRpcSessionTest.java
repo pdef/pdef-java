@@ -38,7 +38,7 @@ public class HttpUrlConnectionRpcSessionTest {
 	@Test
 	public void testBuildUrl() throws Exception {
 		RpcRequest request = new RpcRequest()
-				.setPath("/method/arg")
+				.setRelativePath("/method/arg")
 				.setQuery(ImmutableMap.of("key", "value", "привет", "мир"));
 		URL result = session.buildUrl("http://localhost", request);
 		assertEquals(

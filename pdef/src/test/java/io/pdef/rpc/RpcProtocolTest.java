@@ -45,7 +45,7 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals(RpcRequest.GET, request.getMethod());
-		assertEquals("/method/1/2", request.getPath());
+		assertEquals("/method/1/2", request.getRelativePath());
 		assertTrue(request.getQuery().isEmpty());
 		assertTrue(request.getPost().isEmpty());
 	}
@@ -56,7 +56,7 @@ public class RpcProtocolTest {
 		proxy(ref).query(1, 2);
 
 		RpcRequest request = protocol.getRequest(ref.get());
-		assertEquals("/query", request.getPath());
+		assertEquals("/query", request.getRelativePath());
 		assertEquals(ImmutableMap.of("arg0", "1", "arg1", "2"), request.getQuery());
 		assertTrue(request.getPost().isEmpty());
 	}
@@ -68,7 +68,7 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals(RpcRequest.POST, request.getMethod());
-		assertEquals("/post", request.getPath());
+		assertEquals("/post", request.getRelativePath());
 		assertTrue(request.getQuery().isEmpty());
 		assertEquals(ImmutableMap.of("arg0", "1", "arg1", "2"), request.getPost());
 	}
@@ -80,7 +80,7 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals(RpcRequest.GET, request.getMethod());
-		assertEquals("/interface0/1/2/method/3/4", request.getPath());
+		assertEquals("/interface0/1/2/method/3/4", request.getRelativePath());
 		assertTrue(request.getQuery().isEmpty());
 		assertTrue(request.getPost().isEmpty());
 	}
@@ -91,7 +91,7 @@ public class RpcProtocolTest {
 		proxy(ref).string0("привет");
 
 		RpcRequest request = protocol.getRequest(ref.get());
-		assertEquals("/string0/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82", request.getPath());
+		assertEquals("/string0/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82", request.getRelativePath());
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80",
-				request.getPath());
+				request.getRelativePath());
 	}
 
 	// write.
@@ -128,7 +128,7 @@ public class RpcProtocolTest {
 
 	@Test
 	public void testGetInvocation() throws Exception {
-		RpcRequest request = new RpcRequest().setPath("/method/1/2/");
+		RpcRequest request = new RpcRequest().setRelativePath("/method/1/2/");
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals("method", invocation.getMethod().getName());
@@ -138,7 +138,7 @@ public class RpcProtocolTest {
 	@Test
 	public void testGetInvocation_queryMethod() throws Exception {
 		RpcRequest request = new RpcRequest()
-				.setPath("/query")
+				.setRelativePath("/query")
 				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
@@ -150,7 +150,7 @@ public class RpcProtocolTest {
 	public void testGetInvocation_postMethod() throws Exception {
 		RpcRequest request = new RpcRequest()
 				.setMethod(RpcRequest.POST)
-				.setPath("/post")
+				.setRelativePath("/post")
 				.setPost(ImmutableMap.of("arg0", "1", "arg1", "2"));
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
@@ -160,14 +160,14 @@ public class RpcProtocolTest {
 
 	@Test(expected = RpcException.class)
 	public void testGetInvocation_postMethod_getNotAllowed() throws Exception {
-		RpcRequest request = new RpcRequest().setPath("/post");
+		RpcRequest request = new RpcRequest().setRelativePath("/post");
 
 		protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 	}
 
 	@Test
 	public void testGetInvocation_chainedMethods() throws Exception {
-		RpcRequest request = new RpcRequest().setPath("/interface0/1/2/query/")
+		RpcRequest request = new RpcRequest().setRelativePath("/interface0/1/2/query/")
 				.setQuery(ImmutableMap.of("arg0", "3", "arg1", "4"));
 
 		List<Invocation> chain = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR).toChain();
@@ -184,7 +184,7 @@ public class RpcProtocolTest {
 
 	@Test(expected = RpcException.class)
 	public void testGetInvocation_lastMethodNotTerminal() throws Exception {
-		RpcRequest request = new RpcRequest().setPath("/interface0/1/2");
+		RpcRequest request = new RpcRequest().setRelativePath("/interface0/1/2");
 
 		protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 	}
@@ -192,7 +192,7 @@ public class RpcProtocolTest {
 	@Test
 	public void testGetInvocation_urldecodePathArgs() throws Exception {
 		RpcRequest request = new RpcRequest()
-				.setPath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
+				.setRelativePath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(stringMethod(), invocation.getMethod());
@@ -202,7 +202,8 @@ public class RpcProtocolTest {
 	@Test
 	public void testGetInvocation_urldecodePathArgsWithSlashes() throws Exception {
 		RpcRequest request = new RpcRequest()
-				.setPath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80");
+				.setRelativePath(
+						"/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80");
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(stringMethod(), invocation.getMethod());

@@ -30,7 +30,7 @@ public class RpcRequest {
 	public static final String POST = "POST";
 
 	private String method = GET;
-	private String path = "";
+	private String relativePath = "";
 	private Map<String, String> query = new LinkedHashMap<String, String>();
 	private Map<String, String> post = new LinkedHashMap<String, String>();
 
@@ -42,7 +42,7 @@ public class RpcRequest {
 
 	@Override
 	public String toString() {
-		return "RpcRequest{" + method + ", path='" + path + '\'' + '}';
+		return "RpcRequest{" + method + ", path='" + relativePath + '\'' + '}';
 	}
 
 	public boolean isPost() {
@@ -58,17 +58,17 @@ public class RpcRequest {
 		return this;
 	}
 
-	public String getPath() {
-		return path;
+	public String getRelativePath() {
+		return relativePath;
 	}
 
-	public RpcRequest setPath(final String path) {
-		this.path = path;
+	public RpcRequest setRelativePath(final String relativePath) {
+		this.relativePath = relativePath;
 		return this;
 	}
 
 	public RpcRequest appendPath(final String s) {
-		path += s;
+		relativePath += s;
 		return this;
 	}
 
@@ -108,7 +108,8 @@ public class RpcRequest {
 		final RpcRequest request = (RpcRequest) o;
 
 		if (method != null ? !method.equals(request.method) : request.method != null) return false;
-		if (path != null ? !path.equals(request.path) : request.path != null) return false;
+		if (relativePath != null ? !relativePath.equals(request.relativePath) : request.relativePath
+				!= null) return false;
 		if (post != null ? !post.equals(request.post) : request.post != null) return false;
 		if (query != null ? !query.equals(request.query) : request.query != null) return false;
 
@@ -118,7 +119,7 @@ public class RpcRequest {
 	@Override
 	public int hashCode() {
 		int result = method != null ? method.hashCode() : 0;
-		result = 31 * result + (path != null ? path.hashCode() : 0);
+		result = 31 * result + (relativePath != null ? relativePath.hashCode() : 0);
 		result = 31 * result + (query != null ? query.hashCode() : 0);
 		result = 31 * result + (post != null ? post.hashCode() : 0);
 		return result;

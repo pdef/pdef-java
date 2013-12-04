@@ -36,7 +36,7 @@ public class RpcClientTest {
 		client.invoke(invocation);
 
 		RpcRequest request = new RpcRequest()
-				.setPath("/query")
+				.setRelativePath("/query")
 				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
 		verify(session).send(request, Descriptors.int32, PdefTestException.DESCRIPTOR);
 	}

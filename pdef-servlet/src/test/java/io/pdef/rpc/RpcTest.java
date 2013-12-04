@@ -51,14 +51,14 @@ public class RpcTest {
 				PdefTestInterface.DESCRIPTOR, service);
 		HttpServlet servlet = new Servlet(new RpcServlet<PdefTestInterface>(handler));
 		ServletContextHandler context = new ServletContextHandler();
-		context.setContextPath("/testapp");
-		context.addServlet(new ServletHolder(servlet), "/");
+		context.setContextPath("/context");
+		context.addServlet(new ServletHolder(servlet), "/servlet/*");
 
 		server = new Server(0);
 		server.setHandler(context);
 		server.start();
 
-		address = "http://localhost:" + server.getConnectors()[0].getLocalPort() + "/testapp";
+		address = "http://localhost:" + server.getConnectors()[0].getLocalPort() + "/context/servlet";
 		serverThread = new Thread(new Runnable() {
 			@Override
 			public void run() {

@@ -71,7 +71,7 @@ public class HttpUrlConnectionRpcSession implements RpcSession {
 	protected URL buildUrl(final String url, final RpcRequest request)
 			throws MalformedURLException, UnsupportedEncodingException {
 		StringBuilder builder = new StringBuilder(url);
-		builder.append(request.getPath());
+		builder.append(request.getRelativePath());
 
 		Map<String, String> query = request.getQuery();
 		if (!query.isEmpty()) {

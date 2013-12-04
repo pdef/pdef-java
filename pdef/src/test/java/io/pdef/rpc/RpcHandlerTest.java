@@ -37,7 +37,7 @@ public class RpcHandlerTest {
 
 	@Test(expected = RpcException.class)
 	public void testHandle_rpcException() throws Exception {
-		RpcRequest request = new RpcRequest().setPath("/hello/world/wrong/path");
+		RpcRequest request = new RpcRequest().setRelativePath("/hello/world/wrong/path");
 		handler.handle(request);
 	}
 
@@ -73,6 +73,6 @@ public class RpcHandlerTest {
 	}
 
 	private RpcRequest getRequest() {
-		return new RpcRequest().setPath("/method/1/2");
+		return new RpcRequest().setRelativePath("/method/1/2");
 	}
 }

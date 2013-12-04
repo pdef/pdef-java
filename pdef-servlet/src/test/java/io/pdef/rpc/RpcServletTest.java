@@ -45,15 +45,17 @@ public class RpcServletTest {
 	public void testGetRpcRequest() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(request.getMethod()).thenReturn(RpcRequest.GET);
-		when(request.getContextPath()).thenReturn("/my/app");
-		when(request.getRequestURI()).thenReturn("/my/app/method1/method2");
+		when(request.getContextPath()).thenReturn("/context");
+		when(request.getServletPath()).thenReturn("/app");
+		when(request.getPathInfo()).thenReturn("/method1/method2");
+		when(request.getRequestURI()).thenReturn("/context/app/method1/method2");
 		when(request.getParameterMap()).thenReturn(ImmutableMap.of(
 				"key0", new String[]{"value0"},
 				"key1", new String[]{"value1", "value11"}));
 
 		RpcRequest req = servlet.getRpcRequest(request);
 		assertEquals(RpcRequest.GET, req.getMethod());
-		assertEquals("/method1/method2", req.getPath());
+		assertEquals("/method1/method2", req.getRelativePath());
 		assertEquals(ImmutableMap.of("key0", "value0", "key1", "value1"), req.getQuery());
 		assertEquals(ImmutableMap.of("key0", "value0", "key1", "value1"), req.getPost());
 	}
@@ -92,6 +94,30 @@ public class RpcServletTest {
 
 		verify(response).setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
 		verify(response).setContentType(RpcServlet.TEXT_CONTENT_TYPE);
+	}
+
+	@Test
+	public void testGetRelativePath() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getPathInfo()).thenReturn("/method/1/2");
+		when(request.getContextPath()).thenReturn("/context");
+		when(request.getServletPath()).thenReturn("/app");
+		when(request.getRequestURI()).thenReturn("/context/app/method/1/2");
+
+		String relativePath = servlet.getRelativePath(request);
+		assertEquals("/method/1/2", relativePath);
+	}
+
+	@Test
+	public void testGetRelativePath_noPathInfo() throws Exception {
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getPathInfo()).thenReturn(null);
+		when(request.getContextPath()).thenReturn("/context");
+		when(request.getServletPath()).thenReturn("/method/1/2");
+		when(request.getRequestURI()).thenReturn("/context/method/1/2");
+
+		String relativePath = servlet.getRelativePath(request);
+		assertEquals("/method/1/2", relativePath);
 	}
 
 	private HttpServletResponse mockResponse() {
