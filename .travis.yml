@@ -8,5 +8,5 @@ install:
   - sh -c 'cd generator && sudo python setup.py install'
 script:
   - sh -c 'cd generator && nosetests'
-  - sh -c 'cd java && mvn test'
+  - mvn test
 

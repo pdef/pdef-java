@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import org.mockito.MockitoAnnotations;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +37,7 @@ public class RpcServletTest {
 
 	@Before
 	public void setUp() throws Exception {
-		initMocks(this);
+		MockitoAnnotations.initMocks(this);
 		servlet = new RpcServlet<PdefTestInterface>(handler);
 	}
 

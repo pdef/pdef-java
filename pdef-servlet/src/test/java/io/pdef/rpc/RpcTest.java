@@ -49,7 +49,7 @@ public class RpcTest {
 
 		RpcHandler<PdefTestInterface> handler = new RpcHandler<PdefTestInterface>(
 				PdefTestInterface.DESCRIPTOR, service);
-		HttpServlet servlet = new Servlet(handler.servlet());
+		HttpServlet servlet = new Servlet(new RpcServlet<PdefTestInterface>(handler));
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/testapp");
 		context.addServlet(new ServletHolder(servlet), "/");

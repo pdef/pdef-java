@@ -107,7 +107,6 @@ public final class RpcServlet<T> extends HttpServlet {
 	private Map<String, String> getParams(final HttpServletRequest request) {
 		Map<String, String> params = new HashMap<String, String>();
 
-		@SuppressWarnings("unchecked")
 		Map<String, String[]> map = request.getParameterMap();
 		for (Map.Entry<String, String[]> entry : map.entrySet()) {
 			String key = entry.getKey();

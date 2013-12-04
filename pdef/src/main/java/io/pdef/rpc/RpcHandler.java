@@ -70,8 +70,4 @@ public class RpcHandler<T> {
 			throw e;
 		}
 	}
-
-	public RpcServlet<T> servlet() {
-		return new RpcServlet<T>(this);
-	}
 }
