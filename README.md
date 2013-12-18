@@ -3,12 +3,6 @@ Pdef Java
 Java code generator for [Pdef compiler](https://github.com/pdef/pdef)
 and Java implementation of descriptors, JSON format and HTTP RPC.
 
-Structure
----------
-- **generator**: Pdef code generator for Java.
-- **java**: Java descriptors, JSON and HTTP RPC implementations.
-- **example**: Example java project.
-
 Requirements
 ------------
 - Java: Java 6+, Maven,
@@ -38,7 +32,19 @@ Installation
     ```
     
 - Java package (maven):
-    In progress...
+    ```xml
+    <dependency>
+        <groupId>io.pdef</groupId>
+        <artifactId>pdef</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.pdef</groupId>
+        <artifactId>pdef-servlet</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+    ```
 
 Code generation
 ---------------
@@ -191,6 +197,14 @@ List<Human> humans = world.humans().all(10, 0); // limit=10, offset=0.
 world.switchDayNight();
 ```
 
+Null results are automatically converted into default values.
+```java
+// It is null-safe to write:
+for (Human human : world.humans().all(10, 0)) {
+    // do something with a human.
+}
+```
+
 Create an RPC client with a custom `RpcSession`:
 ```
 RpcSession session = createCustomSession();
@@ -224,6 +238,16 @@ Use a service provider when you need to get a fresh service instance for each re
 ```java
 Provider<World> provider = getWorldProvider();
 RpcHandler<World> handler = new RpcHandler<World>(World.DESCRIPTOR, provider);
+```
+
+Null primitive method arguments are automatically converted into the default values.
+```
+class MyHumans implements Humans {
+    public List<world.Human> all(int limit, int offset) {
+        // Null limit and offset are set to 0.
+        return null;
+    }
+}
 ```
 
 Wrap an `RpcServlet` in another servlet as a delegate to add custom headers and custom HTTP

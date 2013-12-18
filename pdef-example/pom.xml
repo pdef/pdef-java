@@ -89,7 +89,7 @@
 							<tasks>
 								<exec executable="pdefc" failonerror="true">
 									<arg value="generate" />
-                                    <arg value="https://raw.github.com/pdef/pdef/master/example/world.yaml" />
+                                    <arg value="https://raw.github.com/pdef/pdef/1.0/example/world.yaml" />
 									<arg value="--generator=java" />
 									<arg value="--out=target/generated-sources/pdef" />
 								</exec>

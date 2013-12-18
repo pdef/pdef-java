@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='pdef-java',
-    version='1.0',
+    version='1.0.0',
     license='Apache License 2.0',
     url='http://github.com/pdef/pdef-java',
     description='Pdef java generator',
