@@ -51,9 +51,9 @@ public class InvocationTest {
 	}
 
 	@Test
-	public void testConstructor_nullPrimitivesToDefaults() throws Exception {
+	public void testGetArgsWithDefaults_nullPrimitivesToDefaults() throws Exception {
 		Invocation invocation = Invocation.root(method(), new Object[]{null, null});
-		assertArrayEquals(new Object[]{0, 0}, invocation.getArgs());
+		assertArrayEquals(new Object[]{0, 0}, invocation.getArgsWithDefaults());
 	}
 
 	@Test

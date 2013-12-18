@@ -51,6 +51,19 @@ public class RpcProtocolTest {
 	}
 
 	@Test
+	public void testGetRequest_forbidNullPathArguments() throws Exception {
+		AtomicReference<Invocation> ref = Atomics.newReference();
+		proxy(ref).string0(null);
+
+		try {
+			protocol.getRequest(ref.get());
+			fail();
+		} catch (NullPointerException e) {
+			assertTrue(e.getMessage().contains("Path method argument"));
+		}
+	}
+
+	@Test
 	public void testGetRequest_query() throws Exception {
 		AtomicReference<Invocation> ref = Atomics.newReference();
 		proxy(ref).query(1, 2);
@@ -139,11 +152,11 @@ public class RpcProtocolTest {
 	public void testGetInvocation_queryMethod() throws Exception {
 		RpcRequest request = new RpcRequest()
 				.setRelativePath("/query")
-				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
+				.setQuery(ImmutableMap.of("arg0", "1"));
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(queryMethod(), invocation.getMethod());
-		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
+		assertArrayEquals(new Object[]{1, null}, invocation.getArgs());
 	}
 
 	@Test
@@ -151,11 +164,11 @@ public class RpcProtocolTest {
 		RpcRequest request = new RpcRequest()
 				.setMethod(RpcRequest.POST)
 				.setRelativePath("/post")
-				.setPost(ImmutableMap.of("arg0", "1", "arg1", "2"));
+				.setPost(ImmutableMap.of("arg0", "1"));
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals(postMethod(), invocation.getMethod());
-		assertArrayEquals(new Object[]{1, 2}, invocation.getArgs());
+		assertArrayEquals(new Object[]{1, null}, invocation.getArgs());
 	}
 
 	@Test(expected = RpcException.class)

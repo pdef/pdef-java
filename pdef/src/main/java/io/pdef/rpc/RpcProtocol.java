@@ -72,8 +72,14 @@ public class RpcProtocol {
 		for (int i = 0; i < args.length; i++) {
 			ArgumentDescriptor argd = argds.get(i);
 			Object arg = args[i];
-
 			String name = argd.getName();
+			if (arg == null) {
+				if (argd.isPost() || argd.isQuery()) {
+					continue;
+				}
+				throw new NullPointerException("Path method argument '" + name + "' cannot be null");
+			}
+
 			String value = toJson(argd.getType(), arg);
 
 			if (argd.isPost()) {
@@ -175,7 +181,13 @@ public class RpcProtocol {
 				value = urldecode(parts.removeFirst());
 			}
 
-			Object arg = fromJson(argd.getType(), value);
+			Object arg;
+			if (value == null) {
+				arg = null;
+			} else {
+				arg = fromJson(argd.getType(), value);
+			}
+
 			args.add(arg);
 		}
 

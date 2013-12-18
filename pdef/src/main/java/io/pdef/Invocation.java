@@ -52,6 +52,25 @@ public class Invocation {
 		return args.clone();
 	}
 
+	public Object[] getArgsWithDefaults() {
+		List<ArgumentDescriptor<?>> argds = method.getArgs();
+		Object[] result = new Object[args.length];
+
+		for (int i = 0; i < args.length; i++) {
+			Object arg = args[i];
+			DataTypeDescriptor<?> type = argds.get(i).getType();
+
+			if (arg == null && type.getType().isPrimitive()) {
+				// Replace null primitives with the default values.
+				result[i] = type.getDefault();
+			} else {
+				result[i] = arg;
+			}
+		}
+
+		return result;
+	}
+
 	public MethodDescriptor<?, ?> getMethod() {
 		return method;
 	}
@@ -76,7 +95,7 @@ public class Invocation {
 		for (Invocation invocation : toChain()) {
 			MethodDescriptor<Object, Object> unchecked =
 					(MethodDescriptor<Object, Object>) invocation.method;
-			object = unchecked.invoke(object, invocation.args);
+			object = unchecked.invoke(object, invocation.getArgsWithDefaults());
 		}
 
 		return object;
@@ -97,15 +116,7 @@ public class Invocation {
 
 		Object[] copy = new Object[length];
 		for (int i = 0; i < length; i++) {
-			Object arg = args[i];
-			DataTypeDescriptor<?> type = argds.get(i).getType();
-
-			if (arg == null && type.getType().isPrimitive()) {
-				// Replace null primitives with the default values.
-				copy[i] = type.getDefault();
-			} else {
-				copy[i] = DataTypes.copy(args[i]);
-			}
+			copy[i] = DataTypes.copy(args[i]);
 		}
 
 		return copy;
