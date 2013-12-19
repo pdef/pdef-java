@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='pdef-java',
-    version='1.0.0',
+    version='1.1.0',
     license='Apache License 2.0',
     url='http://github.com/pdef/pdef-java',
     description='Pdef java generator',
@@ -25,7 +25,7 @@ setup(
     },
 
     install_requires=[
-        'pdef-compiler'
+        'pdef-compiler>=1.1'
     ],
     entry_points={
         'pdefc.generators': [

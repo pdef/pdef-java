@@ -197,12 +197,10 @@ List<Human> humans = world.humans().all(10, 0); // limit=10, offset=0.
 world.switchDayNight();
 ```
 
-Null results are automatically converted into default values.
+Null primitive results are automatically converted into default values.
 ```java
 // It is null-safe to write:
-for (Human human : world.humans().all(10, 0)) {
-    // do something with a human.
-}
+int result = calculator.sum(1, 2);
 ```
 
 Create an RPC client with a custom `RpcSession`:

@@ -24,6 +24,9 @@ package {{ interface.module|jpackage }};
 {% endfor %}
     static io.pdef.descriptors.InterfaceDescriptor<{{ interface|jname }}> DESCRIPTOR = io.pdef.descriptors.InterfaceDescriptor.<{{ interface|jname }}>builder()
             .setJavaClass({{ interface|jname }}.class)
+        {% if interface.base %}
+            .setBase({{ interface.base|jdescriptor }})
+        {% endif %}
         {% if interface.exc %}
             .setExc({{ interface.exc|jdescriptor }})
         {% endif %}

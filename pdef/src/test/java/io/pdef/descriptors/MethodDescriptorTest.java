@@ -26,20 +26,17 @@ import static org.mockito.Mockito.*;
 public class MethodDescriptorTest {
 	@Test
 	public void testGetName() throws Exception {
-		MethodDescriptor<PdefTestInterface, ?> method = method();
+		MethodDescriptor<?, ?> method = method();
 		assertNotNull(method);
 		assertEquals("method", method.getName());
 	}
 
 	@Test
 	public void testIndexPostTerminal() throws Exception {
-		MethodDescriptor<PdefTestInterface, ?> index = method();
-		MethodDescriptor<PdefTestInterface, ?> query = PdefTestInterface.DESCRIPTOR.getMethod(
-				"query");
-		MethodDescriptor<PdefTestInterface, ?> post = PdefTestInterface.DESCRIPTOR.getMethod(
-				"post");
-		MethodDescriptor<PdefTestInterface, ?> iface = PdefTestInterface.DESCRIPTOR.getMethod(
-				"interface0");
+		MethodDescriptor<?, ?> index = method();
+		MethodDescriptor<?, ?> query = PdefTestInterface.DESCRIPTOR.getMethod("query");
+		MethodDescriptor<?, ?> post = PdefTestInterface.DESCRIPTOR.getMethod("post");
+		MethodDescriptor<?, ?> iface = PdefTestInterface.DESCRIPTOR.getMethod("interface0");
 
 		assertTrue(index.isTerminal());
 		assertFalse(index.isPost());
@@ -56,7 +53,7 @@ public class MethodDescriptorTest {
 
 	@Test
 	public void testInvoke() throws Exception {
-		MethodDescriptor<PdefTestInterface, ?> method = method();
+		MethodDescriptor<? super PdefTestInterface, ?> method = method();
 		assert method != null;
 
 		PdefTestInterface object = mock(PdefTestInterface.class);
@@ -66,8 +63,8 @@ public class MethodDescriptorTest {
 
 	@Test(expected = PdefTestException.class)
 	public void testInvoke_exception() throws Exception {
-		MethodDescriptor<PdefTestInterface, ?> method = PdefTestInterface.DESCRIPTOR.getMethod(
-				"exc0");
+		MethodDescriptor<? super PdefTestInterface, ?> method = PdefTestInterface.DESCRIPTOR
+				.getMethod("exc0");
 		assert method != null;
 
 		PdefTestInterface object = mock(PdefTestInterface.class);
@@ -76,7 +73,7 @@ public class MethodDescriptorTest {
 		method.invoke(object, null);
 	}
 
-	private MethodDescriptor<PdefTestInterface, ?> method() {
+	private MethodDescriptor<? super PdefTestInterface, ?> method() {
 		return PdefTestInterface.DESCRIPTOR.getMethod("method");
 	}
 }

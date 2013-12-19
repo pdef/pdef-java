@@ -20,22 +20,24 @@ import io.pdef.Message;
 import io.pdef.TypeEnum;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InterfaceDescriptor<T> extends Descriptor<T> {
-	private final List<MethodDescriptor<T, ?>> methods;
-	private final Map<String, MethodDescriptor<T, ?>> methodMap;
+	private final InterfaceDescriptor<? super T> base;
 	private final MessageDescriptor<? extends Message> exc;
+
+	private final List<MethodDescriptor<T, ?>> declaredMethods;
+	private final List<MethodDescriptor<? super T, ?>> methods;
+	private final Map<String, MethodDescriptor<? super T, ?>> methodMap;
 
 	private InterfaceDescriptor(final Builder<T> builder) {
 		super(TypeEnum.INTERFACE, builder.javaClass);
 
+		base = builder.base;
 		exc = builder.exc;
-		methods = ImmutableCollections.list(builder.methods);
-		methodMap = ImmutableCollections.map(methodsToMap(methods));
+		declaredMethods = ImmutableCollections.list(builder.methods);
+		methods = joinMethods(declaredMethods, base);
+		methodMap = methodMap(methods);
 	}
 
 	public static <T> Builder<T> builder() {
@@ -47,25 +49,36 @@ public class InterfaceDescriptor<T> extends Descriptor<T> {
 		return "InterfaceDescriptor{" + getJavaClass().getSimpleName() + '}';
 	}
 
+	/** Returns this interface base or @literal{null}. */
+	public InterfaceDescriptor<? super T> getBase() {
+		return base;
+	}
+
+	/** Returns a list of methods declared in this interface (not in its base) or an empty list. */
+	public List<MethodDescriptor<T, ?>> getDeclaredMethods() {
+		return declaredMethods;
+	}
+
 	/** Returns a list of method descriptors or an empty list. */
-	public List<MethodDescriptor<T, ?>> getMethods() {
+	public List<MethodDescriptor<? super T, ?>> getMethods() {
 		return methods;
 	}
 
 	/** Returns an exception descriptor or {@literal null}. */
 	@Nullable
 	public MessageDescriptor<? extends Message> getExc() {
-		return exc;
+		return exc != null ? exc : (base != null ? base.exc : null);
 	}
 
 	/** Returns a method descriptor by its name and returns it or {@literal null}. */
 	@Nullable
-	public MethodDescriptor<T, ?> getMethod(final String name) {
+	public MethodDescriptor<? super T, ?> getMethod(final String name) {
 		return methodMap.get(name);
 	}
 
 	public static class Builder<T> {
 		private Class<T> javaClass;
+		private InterfaceDescriptor<? super T> base;
 		private MessageDescriptor<? extends Message> exc;
 		private List<MethodDescriptor<T, ?>> methods;
 
@@ -75,6 +88,11 @@ public class InterfaceDescriptor<T> extends Descriptor<T> {
 
 		public Builder<T> setJavaClass(final Class<T> javaClass) {
 			this.javaClass = javaClass;
+			return this;
+		}
+
+		public Builder<T> setBase(final InterfaceDescriptor<? super T> base) {
+			this.base = base;
 			return this;
 		}
 
@@ -93,13 +111,24 @@ public class InterfaceDescriptor<T> extends Descriptor<T> {
 		}
 	}
 
-	private static <T> Map<String, MethodDescriptor<T, ?>> methodsToMap(
-			final List<MethodDescriptor<T, ?>> methods) {
-		Map<String, MethodDescriptor<T, ?>> map = new HashMap<String,
-				MethodDescriptor<T, ?>>();
-		for (MethodDescriptor<T, ?> method : methods) {
+	private static <T> List<MethodDescriptor<? super T, ?>> joinMethods(
+			final List<MethodDescriptor<T, ?>> declaredMethods,
+			@Nullable final InterfaceDescriptor<? super T> base) {
+		List<MethodDescriptor<? super T, ?>> result = new ArrayList<MethodDescriptor<? super T, ?>>();
+		if (base != null) {
+			result.addAll(base.getMethods());
+		}
+		result.addAll(declaredMethods);
+		return Collections.unmodifiableList(result);
+	}
+
+	private static <T> Map<String, MethodDescriptor<? super T, ?>> methodMap(
+			final List<MethodDescriptor<? super T, ?>> methods) {
+		Map<String, MethodDescriptor<? super T, ?>> map = new HashMap<String,
+				MethodDescriptor<? super T, ?>>();
+		for (MethodDescriptor<? super T, ?> method : methods) {
 			map.put(method.getName(), method);
 		}
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 }

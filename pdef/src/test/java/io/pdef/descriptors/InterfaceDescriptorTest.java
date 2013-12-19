@@ -18,6 +18,8 @@ package io.pdef.descriptors;
 
 import io.pdef.test.interfaces.PdefTestInterface;
 import io.pdef.test.interfaces.PdefTestException;
+import io.pdef.test.interfaces.PdefTestSubException;
+import io.pdef.test.interfaces.PdefTestSubInterface;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -28,6 +30,15 @@ public class InterfaceDescriptorTest {
 		assertEquals(PdefTestInterface.class, descriptor.getJavaClass());
 		assertEquals(PdefTestException.DESCRIPTOR, descriptor.getExc());
 		assertEquals(12, descriptor.getMethods().size());
+	}
+
+	@Test
+	public void testInheritance() throws Exception {
+		InterfaceDescriptor<PdefTestSubInterface> descriptor = PdefTestSubInterface.DESCRIPTOR;
+		assertTrue(descriptor.getBase() == PdefTestInterface.DESCRIPTOR);
+		assertTrue(descriptor.getExc() == PdefTestSubException.DESCRIPTOR);
+		assertEquals(1, descriptor.getDeclaredMethods().size());
+		assertEquals(13, descriptor.getMethods().size());
 	}
 
 	@Test
