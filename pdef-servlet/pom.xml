@@ -7,12 +7,12 @@
 	<parent>
 	    <groupId>io.pdef</groupId>
 	    <artifactId>pdef-parent</artifactId>
-	    <version>1.0.0</version>
+	    <version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>pdef-servlet</artifactId>
-	<name>Pdef Servlet</name>
-	<description>Pdef servlet rpc handler</description>
+	<name>Pdef servlet</name>
+	<description>Pdef servlet RPC handler</description>
 
 	<properties>
 		<!-- Runtime dependencies -->

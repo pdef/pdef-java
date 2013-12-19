@@ -12,10 +12,10 @@
 
     <groupId>io.pdef</groupId>
     <artifactId>pdef-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Pdef Parent</name>
+	<name>Pdef parent</name>
 	<description>Parent pom for pdef modules</description>
 	<url>http://github.com/pdef/pdef-java</url>
 
