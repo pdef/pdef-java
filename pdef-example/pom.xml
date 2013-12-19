@@ -16,7 +16,6 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<pdef.version>1.0.0</pdef.version>
 		<guava.version>14.0.1</guava.version>
 	</properties>
 
@@ -24,13 +23,13 @@
 		<dependency>
 			<groupId>io.pdef</groupId>
 			<artifactId>pdef</artifactId>
-			<version>${pdef.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.pdef</groupId>
 			<artifactId>pdef-servlet</artifactId>
-			<version>${pdef.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

@@ -4,6 +4,7 @@ jdk:
   - openjdk7
 before_install:
   - sudo pip install nose
+  - sudo pip install -e git+https://github.com/pdef/pdef.git@1.1#egg=pdef-compiler==1.1
 install:
   - sh -c 'cd generator && sudo python setup.py install'
 script:
