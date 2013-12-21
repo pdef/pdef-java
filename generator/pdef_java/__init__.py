@@ -21,7 +21,8 @@ import os.path
 
 import pdefc
 from pdefc.lang import TypeEnum
-from pdefc.generators import Generator, Templates, upper_first, mkdir_p
+from pdefc.generators import Generator, Templates, upper_first, mkdir_p, GeneratorCli, ModuleMapper, \
+    PrefixMapper
 
 __title__ = 'pdef-java'
 __author__ = 'Ivan Korobkov <ivan.korobkov@gmail.com>'
@@ -36,10 +37,32 @@ MESSAGE_TEMPLATE = 'message.jinja2'
 INTERFACE_TEMPLATE = 'interface.jinja2'
 
 
+class JavaGeneratorCli(GeneratorCli):
+    '''Java code generator command-line interface.'''
+
+    def build_parser(self, parser):
+        self._add_module_args(parser)
+        self._add_prefix_args(parser)
+
+    def create_generator(self, out, args):
+        module_names = self._parse_module_args(args)
+        prefixes = self._parse_prefix_args(args)
+
+        return JavaGenerator(out, module_names=module_names, prefixes=prefixes)
+
+
 class JavaGenerator(Generator):
-    '''Java code generator, supports module names and prefixes.'''
-    def __init__(self, out, module_names=None, prefixes=None, **kwargs):
-        super(JavaGenerator, self).__init__(out, module_names=module_names, prefixes=prefixes)
+    '''Java code generator.'''
+
+    @classmethod
+    def create_cli(cls):
+        return JavaGeneratorCli()
+
+    def __init__(self, out, module_names=None, prefixes=None):
+        super(JavaGenerator, self).__init__(out)
+
+        self.module_mapper = ModuleMapper(module_names)
+        self.prefix_mapper = PrefixMapper(prefixes)
 
         self.filters = _JavaFilters(self.module_mapper, self.prefix_mapper)
         self.templates = Templates(__file__, filters=self.filters)
@@ -92,12 +115,11 @@ class _JavaFilters(object):
         self.prefix_mapper = prefix_mapper
 
     def jname(self, def0):
-        abs_name = '%s.%s' % (def0.module.name if def0.module else '', def0.name)
-        prefix = self.prefix_mapper.get_prefix(abs_name)
+        prefix = self.prefix_mapper.get_prefix(def0.namespace)
         return prefix + def0.name if prefix else def0.name
 
     def jpackage(self, module):
-        return self.module_mapper(module.name)
+        return self.module_mapper(module.fullname)
 
     def jdescriptor(self, type0):
         return self.jref(type0).descriptor

@@ -59,6 +59,15 @@ class TestJavaFilters(unittest.TestCase):
     def setUp(self):
         self.filters = _JavaFilters(ModuleMapper(), PrefixMapper())
 
+    def test_jname(self):
+        self.filters.prefix_mapper = PrefixMapper([('namespace', 'Ns')])
+        module = Module('module', namespace='namespace')
+        msg = Message('Message')
+        msg.module = module
+
+        name = self.filters.jname(msg)
+        assert name == 'NsMessage'
+
     def test_jpackage(self):
         self.filters.module_mapper = ModuleMapper([('service', 'com.company.service')])
         module = Module('service.client.tests')
