@@ -5,32 +5,22 @@ and Java implementation of descriptors, JSON format and HTTP RPC.
 
 Requirements
 ------------
-- Java: Java 6+, Maven,
-- Code generator: [Pdef compiler 1.0+](https://github.com/pdef/pdef), Python 2.6 or Python 3.3+.
+- Java 6+.
+- Code generator: [Pdef compiler 1.1+](https://github.com/pdef/pdef), Python 2.6 or Python 3.3+.
 
 Installation
 ------------
 - Code generator:
     ```bash
-    $ [sudo] pip install pdef-java
-    # or
-    $ [sudo] easy_install pdef-java
+    $ pip install pdef-java
     ```
 
     Or [download](https://github.com/pdef/pdef-java/releases) the release,
     unzip it and in the `generator` directory run:
     ```bash
-    $ [sudo] python setup.py install
+    $ python setup.py install
     ```
 
-    The java generator will appear in the installed generators:
-    ```bash
-    $ pdefc generate -h
-    usage: pdefc generate [...]
-    available generators:
-      - java: Java code generator, supports namespaces.
-    ```
-    
 - Java package (maven):
     ```xml
     <dependency>
@@ -50,17 +40,18 @@ Code generation
 ---------------
 Pass a pdef package path or a url to the compiler:
 ```bash
-$ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
-    --generator java
+$ pdefc generate-java https://raw.github.com/pdef/pdef/1.1/example/world.yaml \
     --out target/generated-sources
 ```
 
-The generator supports mapping pdef modules to java packages via the `--module` argument.
+The generator uses absolute module names (`package.module`) as java package names.
+Use the `--module` argument to manually map pdef modules to java packages.
+Also it is possible to add namespace class prefixes via the `--prefix` argument.
 ```bash
-$ pdefc generate https://github.com/pdef/pdef/blob/master/example/world.yaml \
-    --generator java
-    --module world.space:com.mycompany.common
-    --module world:com.mycompany.world
+$ pdefc generate-java https://raw.github.com/pdef/pdef/1.1/example/world.yaml \
+    --prefix world:W \
+    --module world:com.mycompany.world \
+    --module world.space:com.mycompany.common \
     --out target/generated-sources
 ```
 
@@ -68,9 +59,9 @@ Messages
 --------
 Generated messages implement `equals`, `hashCode`, copy constructors, a `copy` method
 which returns a deep copy of a message, and merging methods. The messages are not thread-safe.
-The examples are based on the [pdef example package](https://github.com/pdef/pdef/tree/master/example).
+The examples are based on the [pdef example package](https://github.com/pdef/pdef/tree/1.1/example).
 
-Messages have a fluent builder-like interface.
+Messages have a fluent interface.
 ```java
 Human human = new Human()
     .setId(1)
@@ -85,7 +76,7 @@ assert human.equals(copy0);
 assert human.equals(copy1);
 ```
 
-Messages support merging which deep copies fields from a source message to destination one:
+Messages support merging which deep copies set fields from a source message to destination one:
 ```
 Human human = new Human()
     .setId(1)
@@ -232,13 +223,13 @@ RpcServlet<World> servlet = new RpcServlet<World>(handler);
 // or wrap in another servlet as a delegate.
 ```
 
-Use a service provider when you need to get a fresh service instance for each request:
+Use a custom provider when you need to get a fresh service instance for each request:
 ```java
 Provider<World> provider = getWorldProvider();
 RpcHandler<World> handler = new RpcHandler<World>(World.DESCRIPTOR, provider);
 ```
 
-Null primitive method arguments are automatically converted into the default values.
+Primitive null arguments are automatically converted into the default values.
 ```
 class MyHumans implements Humans {
     public List<world.Human> all(int limit, int offset) {
