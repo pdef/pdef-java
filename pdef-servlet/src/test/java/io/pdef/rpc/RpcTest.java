@@ -17,7 +17,8 @@
 package io.pdef.rpc;
 
 import io.pdef.test.interfaces.PdefTestException;
-import io.pdef.test.interfaces.PdefTestInterface;
+import io.pdef.test.interfaces.PdefTestSubException;
+import io.pdef.test.interfaces.PdefTestSubInterface;
 import io.pdef.test.messages.PdefTestEnum;
 import io.pdef.test.messages.PdefTestMessage;
 import org.eclipse.jetty.server.Server;
@@ -38,18 +39,18 @@ import java.io.IOException;
 import java.util.Date;
 
 public class RpcTest {
-	PdefTestInterface service;
+	PdefTestSubInterface service;
 	String address;
 	Server server;
 	Thread serverThread;
 
 	@Before
 	public void setUp() throws Exception {
-		service = mock(PdefTestInterface.class);
+		service = mock(PdefTestSubInterface.class);
 
-		RpcHandler<PdefTestInterface> handler = new RpcHandler<PdefTestInterface>(
-				PdefTestInterface.DESCRIPTOR, service);
-		HttpServlet servlet = new Servlet(new RpcServlet<PdefTestInterface>(handler));
+		RpcHandler<PdefTestSubInterface> handler = new RpcHandler<PdefTestSubInterface>(
+				PdefTestSubInterface.DESCRIPTOR, service);
+		HttpServlet servlet = new Servlet(new RpcServlet<PdefTestSubInterface>(handler));
 		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/context");
 		context.addServlet(new ServletHolder(servlet), "/servlet/*");
@@ -96,27 +97,26 @@ public class RpcTest {
 		when(service.enum0(PdefTestEnum.THREE)).thenReturn(PdefTestEnum.THREE);
 		when(service.message0(message.copy())).thenReturn(message.copy());
 		when(service.interface0(1, 2)).thenReturn(service);
-		doThrow(new PdefTestException().setText("Application exception")).when(service).exc0();
+		doThrow(new PdefTestSubException().setText("Application exception")).when(service).exc0();
 		doThrow(new RuntimeException("Test server exception")).when(service).serverError();
 
-		PdefTestInterface client = new RpcClient<PdefTestInterface>(
-				PdefTestInterface.DESCRIPTOR, address).proxy();
-		assertEquals(3, (int) client.method(1, 2));
-		assertEquals(7, (int) client.query(3, 4));
-		assertEquals(11, (int) client.post(5, 6));
+		PdefTestSubInterface client = new RpcClient<PdefTestSubInterface>(
+				PdefTestSubInterface.DESCRIPTOR, address).proxy();
+		assertEquals(3, client.method(1, 2));
+		assertEquals(7, client.query(3, 4));
+		assertEquals(11, client.post(5, 6));
 		assertEquals("Привет", client.string0("Привет"));
 		assertEquals(date, client.datetime0(date));
 		assertEquals(PdefTestEnum.THREE, client.enum0(PdefTestEnum.THREE));
 		assertEquals(message, client.message0(message));
-		assertEquals(7, (int) client.interface0(1, 2).query(3, 4));
-
+		assertEquals(7, client.interface0(1, 2).query(3, 4));
 		client.void0(); // No Exception.
 
 		try {
 			client.exc0();
 			fail();
 		} catch (PdefTestException e) {
-			PdefTestException exc = new PdefTestException().setText("Application exception");
+			PdefTestSubException exc = new PdefTestSubException().setText("Application exception");
 			assertEquals(exc, e);
 		}
 
@@ -126,12 +126,15 @@ public class RpcTest {
 		} catch (RpcException e) {
 			// Ignore exception.
 		}
+
+		client.subMethod();
+		verify(service).subMethod();
 	}
 
 	static class Servlet extends HttpServlet {
-		private final RpcServlet<PdefTestInterface> delegate;
+		private final RpcServlet<PdefTestSubInterface> delegate;
 
-		Servlet(final RpcServlet<PdefTestInterface> delegate) {
+		Servlet(final RpcServlet<PdefTestSubInterface> delegate) {
 			this.delegate = delegate;
 		}
 
