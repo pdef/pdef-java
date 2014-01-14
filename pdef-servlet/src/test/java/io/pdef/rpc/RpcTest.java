@@ -16,6 +16,8 @@
 
 package io.pdef.rpc;
 
+import io.pdef.test.inheritance.PdefBase;
+import io.pdef.test.inheritance.PdefMultiLevelSubtype;
 import io.pdef.test.interfaces.PdefTestException;
 import io.pdef.test.interfaces.PdefTestSubException;
 import io.pdef.test.interfaces.PdefTestSubInterface;
@@ -87,6 +89,10 @@ public class RpcTest {
 				.setString0("Привет, как дела?")
 				.setBool0(false)
 				.setInt0(-123);
+		PdefBase base = new PdefMultiLevelSubtype()
+				.setField("hello")
+				.setMfield("world")
+				.setSubfield("really");
 		Date date = new Date(0);
 
 		when(service.method(1, 2)).thenReturn(3);
@@ -96,6 +102,7 @@ public class RpcTest {
 		when(service.datetime0(date)).thenReturn(new Date(date.getTime()));
 		when(service.enum0(PdefTestEnum.THREE)).thenReturn(PdefTestEnum.THREE);
 		when(service.message0(message.copy())).thenReturn(message.copy());
+		when(service.polymorphic0(base)).thenReturn(base.copy());
 		when(service.interface0(1, 2)).thenReturn(service);
 		doThrow(new PdefTestSubException().setText("Application exception")).when(service).exc0();
 		doThrow(new RuntimeException("Test server exception")).when(service).serverError();
@@ -109,6 +116,7 @@ public class RpcTest {
 		assertEquals(date, client.datetime0(date));
 		assertEquals(PdefTestEnum.THREE, client.enum0(PdefTestEnum.THREE));
 		assertEquals(message, client.message0(message));
+		assertEquals(base, client.polymorphic0(base));
 		assertEquals(7, client.interface0(1, 2).query(3, 4));
 		client.void0(); // No Exception.
 
@@ -116,7 +124,7 @@ public class RpcTest {
 			client.exc0();
 			fail();
 		} catch (PdefTestException e) {
-			PdefTestSubException exc = new PdefTestSubException().setText("Application exception");
+			PdefTestException exc = new PdefTestException().setText("Application exception");
 			assertEquals(exc, e);
 		}
 
