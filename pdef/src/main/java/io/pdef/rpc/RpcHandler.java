@@ -16,10 +16,7 @@
 
 package io.pdef.rpc;
 
-import io.pdef.Invocation;
-import io.pdef.Message;
-import io.pdef.Provider;
-import io.pdef.Providers;
+import io.pdef.*;
 import io.pdef.descriptors.DataTypeDescriptor;
 import io.pdef.descriptors.InterfaceDescriptor;
 import io.pdef.descriptors.MessageDescriptor;
@@ -27,19 +24,23 @@ import io.pdef.descriptors.MethodDescriptor;
 
 public class RpcHandler<T> {
 	private final InterfaceDescriptor<T> descriptor;
-	private final Provider<T> provider;
 	private final RpcProtocol protocol;
+	private final Invoker invoker;
 
 	public RpcHandler(final InterfaceDescriptor<T> descriptor, final T service) {
-		this(descriptor, Providers.ofInstance(service));
+		this(descriptor, Invokers.of(service));
 	}
 
 	public RpcHandler(final InterfaceDescriptor<T> descriptor, final Provider<T> provider) {
+		this(descriptor, Invokers.of(provider));
+	}
+
+	public RpcHandler(final InterfaceDescriptor<T> descriptor, final Invoker invoker) {
 		if (descriptor == null) throw new NullPointerException("descriptor");
-		if (provider == null) throw new NullPointerException("provider");
+		if (invoker == null) throw new NullPointerException("invoker");
 
 		this.descriptor = descriptor;
-		this.provider = provider;
+		this.invoker = invoker;
 		protocol = new RpcProtocol();
 	}
 
@@ -52,9 +53,8 @@ public class RpcHandler<T> {
 		DataTypeDescriptor<Object> resultd = (DataTypeDescriptor<Object>) method.getResult();
 		MessageDescriptor<Message> excd = (MessageDescriptor<Message>) descriptor.getExc();
 
-		T service = provider.get();
 		try {
-			Object result = invocation.invoke(service);
+			Object result = invoker.invoke(invocation);
 			return new RpcResult<Object, Message>(resultd, excd)
 					.setData(result)
 					.setSuccess(true);
