@@ -225,6 +225,8 @@ class JsonObjectFormat {
 	private Boolean readBoolean(final Object input) {
 		if (input instanceof Boolean) {
 			return (Boolean) input;
+		} else if (input instanceof Number) {
+			return ((Number) input).intValue() == 1;
 		}
 		return Boolean.parseBoolean((String) input);
 	}

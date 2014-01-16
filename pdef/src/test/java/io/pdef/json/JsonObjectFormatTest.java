@@ -25,8 +25,7 @@ import io.pdef.test.inheritance.PdefBase;
 import io.pdef.test.inheritance.PdefMultiLevelSubtype;
 import io.pdef.test.messages.PdefTestEnum;
 import io.pdef.test.messages.PdefTestMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.Date;
@@ -51,6 +50,8 @@ public class JsonObjectFormatTest {
 	public void testBool() throws Exception {
 		testPrimitive(Descriptors.bool, true, "TRUE");
 		testPrimitive(Descriptors.bool, false, "False");
+		assertTrue(format.read(1, Descriptors.bool));
+		assertFalse(format.read(0, Descriptors.bool));
 	}
 
 	@Test
