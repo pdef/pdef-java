@@ -26,13 +26,13 @@ Installation
     <dependency>
         <groupId>io.pdef</groupId>
         <artifactId>pdef</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
     </dependency>
 
     <dependency>
         <groupId>io.pdef</groupId>
         <artifactId>pdef-servlet</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
     </dependency>
     ```
 
