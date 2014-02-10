@@ -45,22 +45,9 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals(RpcRequest.GET, request.getMethod());
-		assertEquals("/method/1/2", request.getRelativePath());
-		assertTrue(request.getQuery().isEmpty());
+		assertEquals("/method", request.getRelativePath());
+		assertEquals(ImmutableMap.of("arg0", "1", "arg1", "2"), request.getQuery());
 		assertTrue(request.getPost().isEmpty());
-	}
-
-	@Test
-	public void testGetRequest_forbidNullPathArguments() throws Exception {
-		AtomicReference<Invocation> ref = Atomics.newReference();
-		proxy(ref).string0(null);
-
-		try {
-			protocol.getRequest(ref.get());
-			fail();
-		} catch (NullPointerException e) {
-			assertTrue(e.getMessage().contains("Path method argument"));
-		}
 	}
 
 	@Test
@@ -93,28 +80,18 @@ public class RpcProtocolTest {
 
 		RpcRequest request = protocol.getRequest(ref.get());
 		assertEquals(RpcRequest.GET, request.getMethod());
-		assertEquals("/interface0/1/2/method/3/4", request.getRelativePath());
-		assertTrue(request.getQuery().isEmpty());
+		assertEquals("/interface0/1/2/method", request.getRelativePath());
+		assertEquals(ImmutableMap.of("arg0", "3", "arg1", "4"), request.getQuery());
 		assertTrue(request.getPost().isEmpty());
 	}
 
 	@Test
-	public void testGetRequest_urlencodePathArgs() throws Exception {
+	public void testGetRequest_urlencodeArgs() throws Exception {
 		AtomicReference<Invocation> ref = Atomics.newReference();
-		proxy(ref).string0("привет");
-
+		proxy(ref).interface0(1, 2).string0("привет");
+		
 		RpcRequest request = protocol.getRequest(ref.get());
-		assertEquals("/string0/%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82", request.getRelativePath());
-	}
-
-	@Test
-	public void testGetRequest_urlencodePathArgsWithSlashes() throws Exception {
-		AtomicReference<Invocation> ref = Atomics.newReference();
-		proxy(ref).string0("Привет/мир");
-
-		RpcRequest request = protocol.getRequest(ref.get());
-		assertEquals("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80",
-				request.getRelativePath());
+		assertEquals("/interface0/1/2/string0", request.getRelativePath());
 	}
 
 	// write.
@@ -141,7 +118,9 @@ public class RpcProtocolTest {
 
 	@Test
 	public void testGetInvocation() throws Exception {
-		RpcRequest request = new RpcRequest().setRelativePath("/method/1/2/");
+		RpcRequest request = new RpcRequest()
+				.setRelativePath("/method")
+				.setQuery(ImmutableMap.<String, String>of("arg0", "1", "arg1", "2"));
 
 		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 		assertEquals("method", invocation.getMethod().getName());
@@ -201,28 +180,7 @@ public class RpcProtocolTest {
 
 		protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
 	}
-
-	@Test
-	public void testGetInvocation_urldecodePathArgs() throws Exception {
-		RpcRequest request = new RpcRequest()
-				.setRelativePath("/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82");
-
-		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
-		assertEquals(stringMethod(), invocation.getMethod());
-		assertArrayEquals(new Object[]{"Привет"}, invocation.getArgs());
-	}
-
-	@Test
-	public void testGetInvocation_urldecodePathArgsWithSlashes() throws Exception {
-		RpcRequest request = new RpcRequest()
-				.setRelativePath(
-						"/string0/%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2F%D0%BC%D0%B8%D1%80");
-
-		Invocation invocation = protocol.getInvocation(request, PdefTestInterface.DESCRIPTOR);
-		assertEquals(stringMethod(), invocation.getMethod());
-		assertArrayEquals(new Object[]{"Привет/мир"}, invocation.getArgs());
-	}
-
+	
 	// read
 
 	@Test

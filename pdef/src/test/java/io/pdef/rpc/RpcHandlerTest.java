@@ -16,6 +16,7 @@
 
 package io.pdef.rpc;
 
+import com.google.common.collect.ImmutableMap;
 import io.pdef.descriptors.Descriptors;
 import io.pdef.test.interfaces.PdefTestInterface;
 import io.pdef.test.interfaces.PdefTestException;
@@ -73,6 +74,8 @@ public class RpcHandlerTest {
 	}
 
 	private RpcRequest getRequest() {
-		return new RpcRequest().setRelativePath("/method/1/2");
+		return new RpcRequest()
+				.setRelativePath("/method")
+				.setQuery(ImmutableMap.of("arg0", "1", "arg1", "2"));
 	}
 }

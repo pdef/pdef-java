@@ -24,21 +24,26 @@ package io.pdef.descriptors;
 public class ArgumentDescriptor<V> {
 	private final String name;
 	private final DataTypeDescriptor<V> type;
-	private final boolean query;
-	private final boolean post;
+	private boolean query;
+	private boolean post;
 
 	public static <V> ArgumentDescriptor<V> of(final String name,
 			final DataTypeDescriptor<V> type) {
-		return new ArgumentDescriptor<V>(name, type, false, false);
+		return new ArgumentDescriptor<V>(name, type);
 	}
-
-	public ArgumentDescriptor(final String name, final DataTypeDescriptor<V> type,
-			final boolean query, final boolean post) {
+	
+	public ArgumentDescriptor(final String name, final DataTypeDescriptor<V> type) {
 		if (name == null) throw new NullPointerException("name");
 		if (type == null) throw new NullPointerException("type");
 
 		this.name = name;
 		this.type = type;
+	}
+
+	@Deprecated
+	public ArgumentDescriptor(final String name, final DataTypeDescriptor<V> type,
+			@Deprecated final boolean query, @Deprecated final boolean post) {
+		this(name, type);
 		this.query = query;
 		this.post = post;
 	}
@@ -58,12 +63,18 @@ public class ArgumentDescriptor<V> {
 		return type;
 	}
 
-	/** Returns whether this argument is an HTTP post argument. */
+	/** Deprecated, only methods can be post.
+	 * 
+	 * Returns whether this argument is an HTTP post argument. */
+	@Deprecated
 	public boolean isPost() {
 		return post;
 	}
-
-	/** Returns whether this argument is an HTTP query argument. */
+	
+	/** Deprecated, all terminal method arguments are considered as query. 
+	 * 
+	 * Returns whether this argument is an HTTP query argument. */
+	@Deprecated
 	public boolean isQuery() {
 		return query;
 	}

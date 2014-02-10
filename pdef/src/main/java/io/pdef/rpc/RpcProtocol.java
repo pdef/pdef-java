@@ -68,26 +68,27 @@ public class RpcProtocol {
 
 		Map<String, String> post = request.getPost();
 		Map<String, String> query = request.getQuery();
-
+		
 		for (int i = 0; i < args.length; i++) {
 			ArgumentDescriptor argd = argds.get(i);
 			Object arg = args[i];
 			String name = argd.getName();
 			if (arg == null) {
-				if (argd.isPost() || argd.isQuery()) {
+				if (method.isTerminal()) {
 					continue;
+				} else {
+					throw new NullPointerException(
+							"Interface method argument '" + name + "' cannot be null");
 				}
-				throw new NullPointerException("Path method argument '" + name + "' cannot be null");
 			}
 
 			String value = toJson(argd.getType(), arg);
-
-			if (argd.isPost()) {
-				post.put(name, value);
-			} else if (argd.isQuery()) {
-				query.put(name, value);
-			} else {
+			if (method.isInterface()) {
 				path.append("/").append(urlencode(value));
+			} else if (method.isPost()) {
+				post.put(name, value);
+			} else {
+				query.put(name, value);
 			}
 		}
 
@@ -170,15 +171,17 @@ public class RpcProtocol {
 		for (ArgumentDescriptor<?> argd : method.getArgs()) {
 			String value;
 			String name = argd.getName();
-
-			if (argd.isPost()) {
-				value = post.get(name);
-			} else if (argd.isQuery()) {
-				value = query.get(name);
-			} else if (parts.isEmpty()) {
-				throw RpcException.badRequest("Wrong number of method args");
-			} else {
+			
+			if (method.isInterface()) {
+				if (parts.isEmpty()) {
+					throw RpcException.badRequest("Wrong number of method args");
+				}
+				
 				value = urldecode(parts.removeFirst());
+			} else if (method.isPost()) {
+				value = post.get(name);
+			} else {
+				value = query.get(name);
 			}
 
 			Object arg;

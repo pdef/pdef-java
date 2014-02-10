@@ -86,6 +86,11 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 		TypeEnum type = getResult().getType();
 		return type != TypeEnum.INTERFACE;
 	}
+	
+	/** Returns whether this method returns an interface, its the opposite of isTerminal. */
+	public boolean isInterface() {
+		return !isTerminal();
+	}
 
 	@Override
 	public R invoke(final T object, final Object[] args) throws Exception {
@@ -127,6 +132,12 @@ public class MethodDescriptor<T, R> implements MethodInvoker<T, R> {
 			return this;
 		}
 
+		public <V> Builder<T, R> addArg(final String name, final DataTypeDescriptor<V> type) {
+			this.args.add(new ArgumentDescriptor<V>(name, type));
+			return this;
+		}
+
+		@Deprecated
 		public <V> Builder<T, R> addArg(final String name, final DataTypeDescriptor<V> type,
 				final boolean isQuery, final boolean isPost) {
 			this.args.add(new ArgumentDescriptor<V>(name, type, isQuery, isPost));
