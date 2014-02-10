@@ -40,7 +40,7 @@ package {{ interface.module|jpackage }};
                     .setResult({{ method.result|jdescriptor }})
                 {% endif %}
                 {% for arg in method.args %}
-                    .addArg("{{ arg.name }}", {{ arg.type|jdescriptor }}, {{ arg.is_query|jbool }}, {{ arg.is_post|jbool }})
+                    .addArg("{{ arg.name }}", {{ arg.type|jdescriptor }})
                 {% endfor %}
                 {% if method.is_post %}
                     .setPost(true)
