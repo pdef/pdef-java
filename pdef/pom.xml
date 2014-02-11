@@ -103,7 +103,7 @@
 							<tasks>
 								<exec executable="pdefc" failonerror="true">
 									<arg value="generate-java" />
-                                    <arg value="https://raw.github.com/pdef/pdef/1.1/test/test.yaml" />
+                                    <arg value="https://raw.github.com/pdef/pdef/1.2/test/test.yaml" />
 									<arg value="--prefix=pdef:Pdef" />
 									<arg value="--module=pdef_test:io.pdef.test" />
 									<arg value="--out=target/generated-test-sources/pdef" />
