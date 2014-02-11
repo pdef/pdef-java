@@ -6,7 +6,7 @@ and Java implementation of descriptors, JSON format and HTTP RPC.
 Requirements
 ------------
 - Java 6+.
-- Code generator: [Pdef compiler 1.1+](https://github.com/pdef/pdef), Python 2.6 or Python 3.3+.
+- Code generator: [Pdef compiler 1.2+](https://github.com/pdef/pdef), Python 2.6 or Python 3.3+.
 
 Installation
 ------------
@@ -26,13 +26,13 @@ Installation
     <dependency>
         <groupId>io.pdef</groupId>
         <artifactId>pdef</artifactId>
-        <version>1.1.2</version>
+        <version>1.2.0</version>
     </dependency>
 
     <dependency>
         <groupId>io.pdef</groupId>
         <artifactId>pdef-servlet</artifactId>
-        <version>1.1.2</version>
+        <version>1.2.0</version>
     </dependency>
     ```
 
@@ -40,7 +40,7 @@ Code generation
 ---------------
 Pass a pdef package path or a url to the compiler:
 ```bash
-$ pdefc generate-java https://raw.github.com/pdef/pdef/1.1/example/world.yaml \
+$ pdefc generate-java https://raw.github.com/pdef/pdef/1.2/example/world.yaml \
     --out target/generated-sources
 ```
 
@@ -48,7 +48,7 @@ The generator uses absolute module names (`package.module`) as java package name
 Use the `--module` argument to manually map pdef modules to java packages.
 Also it is possible to add namespace class prefixes via the `--prefix` argument.
 ```bash
-$ pdefc generate-java https://raw.github.com/pdef/pdef/1.1/example/world.yaml \
+$ pdefc generate-java https://raw.github.com/pdef/pdef/1.2/example/world.yaml \
     --prefix world:W \
     --module world:com.mycompany.world \
     --module world.space:com.mycompany.common \
