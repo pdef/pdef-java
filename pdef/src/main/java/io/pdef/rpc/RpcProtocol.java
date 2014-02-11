@@ -16,10 +16,13 @@
 
 package io.pdef.rpc;
 
-import io.pdef.*;
-import io.pdef.descriptors.*;
-import io.pdef.json.JsonFormat;
 import io.pdef.Invocation;
+import io.pdef.TypeEnum;
+import io.pdef.descriptors.ArgumentDescriptor;
+import io.pdef.descriptors.DataTypeDescriptor;
+import io.pdef.descriptors.InterfaceDescriptor;
+import io.pdef.descriptors.MethodDescriptor;
+import io.pdef.json.JsonFormat;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -74,11 +77,11 @@ public class RpcProtocol {
 			Object arg = args[i];
 			String name = argd.getName();
 			if (arg == null) {
-				if (method.isTerminal()) {
-					continue;
-				} else {
+				if (method.isInterface()) {
 					throw new NullPointerException(
 							"Interface method argument '" + name + "' cannot be null");
+				} else {
+					continue;
 				}
 			}
 
