@@ -1,6 +1,9 @@
 Pdef Java Releases
 ------------------
 
+### 1.2.0 (2014-02-11)
+- Simpler RPC, #24.
+
 ### 1.1.2 (2014-01-16)
 - Parsing booleans from 1/0, #23.
 
